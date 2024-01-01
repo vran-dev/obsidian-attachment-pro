@@ -21,8 +21,10 @@ export default class FileFolderAttachmentSaveStrategyHandler
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
 		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const source = getParentFolderFromTFile(context.pageFile);
-		return context.app.fileManager.generateMarkdownLink(tFile, source);
+		return context.app.fileManager.generateMarkdownLink(
+			tFile,
+			context.pageFile.path
+		);
 	}
 
 	resolePath(attachmentName: string, pageFile: TFile) {

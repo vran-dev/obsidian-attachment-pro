@@ -4,7 +4,7 @@ import {
 	AttachmentSaveStrategyHandler,
 } from "./attachmentSaveStrategyHandler";
 import PathResolver from "../path/pathResolver";
-import { appendOrderIfConflict, getParentFolderFromTFile } from "src/util/file";
+import { appendOrderIfConflict } from "src/util/file";
 
 export default class CustomizeAttachmentSaveStrategyHandler
 	implements AttachmentSaveStrategyHandler
@@ -24,10 +24,9 @@ export default class CustomizeAttachmentSaveStrategyHandler
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
 		const tFile = await app.vault.createBinary(filePath, buffer);
-		const parentFolder = getParentFolderFromTFile(context.pageFile);
 		return context.app.fileManager.generateMarkdownLink(
 			tFile,
-			parentFolder
+			context.pageFile.path
 		);
 	}
 }

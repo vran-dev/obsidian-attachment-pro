@@ -2,7 +2,6 @@ import { normalizePath } from "obsidian";
 import {
 	createFolderIfNotExist,
 	joinAndAppendOrderIfConflict,
-	getParentFolderFromTFile,
 	joinFolder,
 } from "src/util/file";
 import { log } from "src/util/log";
@@ -36,10 +35,9 @@ export default class ObsidianAttachmentStrategyHandler {
 		);
 
 		// generate and append markdown link
-		const source = getParentFolderFromTFile(context.pageFile);
 		const link = context.app.fileManager.generateMarkdownLink(
 			tFile,
-			source
+			context.pageFile.path
 		);
 		context.editor.replaceSelection(link);
 	}

@@ -4,7 +4,7 @@ import {
 	AttachmentSaveStrategyHandler,
 } from "./attachmentSaveStrategyHandler";
 import { normalizePath } from "obsidian";
-import { appendOrderIfConflict, getParentFolderFromTFile } from "src/util/file";
+import { appendOrderIfConflict } from "src/util/file";
 
 export default class VaultfolderAttachmentSaveStrategyHandler
 	implements AttachmentSaveStrategyHandler
@@ -18,8 +18,10 @@ export default class VaultfolderAttachmentSaveStrategyHandler
 		const fullPath = normalizePath(context.formatedAttachmentName);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
 		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const source = getParentFolderFromTFile(context.pageFile);
-		return app.fileManager.generateMarkdownLink(tFile, source);
+		return app.fileManager.generateMarkdownLink(
+			tFile,
+			context.pageFile.path
+		);
 	}
 
 	async resolePath(attachmentName: string) {
