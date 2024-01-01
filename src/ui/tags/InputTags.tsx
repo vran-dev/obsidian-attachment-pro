@@ -1,5 +1,4 @@
 import { ReactNode, useLayoutEffect, useRef } from "react";
-import "./style.css";
 import { randomUUID } from "crypto";
 
 export class TagOption {
