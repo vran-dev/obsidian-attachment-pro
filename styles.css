@@ -1,8 +1,142 @@
-/*
+.attachment-pro-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  font-size: calc(var(--font-ui-medium) - 2px);
+  justify-content: center;
+  align-items: center;
+  --max-form-content-width: 400px;
+  --min-form-content-width: 160px;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.attachment-pro-setting .attachment-pro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-width: 100%;
+}
 
-If your plugin does not need CSS, delete this file.
+.attachment-pro-form .form-item {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0.5em 0;
+}
 
-*/
+.attachment-pro-form .form-label {
+  min-width: 120px;
+  color: var(--text-normal);
+  font-size: var(--font-ui-medium);
+  line-height: var(--line-height-tight);
+}
+
+.attachment-pro-form .form-description {
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.attachment-pro-form .form-content {
+  display: flex;
+  min-width: 120px;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: var(--max-form-content-width);
+  min-width: var(--min-form-content-width);
+}
+
+.attachment-pro-form .form-vertical-content {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+  max-width: var(--max-form-content-width);
+  min-width: var(--min-form-content-width);
+}
+
+.attachment-pro-form .select {
+  box-shadow: none;
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  flex-grow: 1;
+}
+
+.attachment-pro-form input {
+  border-radius: 0px;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.attachment-pro-form input:focus {
+  box-shadow: none;
+  border-bottom: 1px solid var(--background-modifier-border-focus);
+}
+
+.attachment-pro-setting .attachment-input-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.attachment-pro-setting .attachment-input-tags .tags {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.attachment-pro-setting .attachment-input-tags input.input {
+  width: 100%;
+  flex-grow: 1;
+}
+
+.attachment-pro-setting .attachment-input-tags input::placeholder {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.attachment-pro-setting .attachment-input-tags .tags .tag {
+  border-radius: 8px;
+  background-color: var(--background-secondary);
+  font-size: var(--font-ui-smaller);
+  padding: 6px 8px 6px 8px;
+}
+
+.attachment-pro-setting .attachment-input-tags .tags .tag:hover {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.attachment-pro-setting .attachment-input-tags .tags .tag .remove-button {
+  margin-left: 6px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.attachment-pro-setting .attachment-input-tags .tags .tag .remove-button:hover {
+  color: var(--text-warning);
+}
+
+.attachment-pro-setting button {
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: none;
+}
