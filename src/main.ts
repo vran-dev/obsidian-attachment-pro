@@ -1,4 +1,4 @@
-import { Plugin } from "obsidian";
+import { Notice, Plugin } from "obsidian";
 import { AttachmentProConfig } from "./manager/types";
 import { DEFAULT_SETTINGS } from "./setting/defaultSetting";
 import { log } from "./util/log";
@@ -9,14 +9,18 @@ export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
 
 	async onload() {
-		await this.loadSettings();
-		this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
-		this.registerEditorPasteHandler();
-		this.registerEditorDropHandler();
-		this.registerFileRenameHandler();
+		try {
+			await this.loadSettings();
+			this.registerEditorPasteHandler();
+			this.registerEditorDropHandler();
+			this.registerFileRenameHandler();
+			this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
+		} catch (e) {
+			new Notice('error when load plugin "Attachment Pro"' + e.message);
+		}
 	}
 
-	onunload() {}
+	onunload() { }
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -54,6 +58,6 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	registerFileRenameHandler() {
-		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {}));
+		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => { }));
 	}
 }

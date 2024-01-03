@@ -1,5 +1,6 @@
-import { ReactNode, useLayoutEffect, useRef } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { randomUUID } from "crypto";
+import { Suggest, SuggestItem } from "../suggest/Suggest";
 
 export class TagOption {
 	id: string;
@@ -11,9 +12,13 @@ export function InputTags(props: {
 	tags: TagOption[];
 	onChange: (tags: TagOption[]) => void;
 	onRemove: (tag: TagOption) => void;
+	getItems?: (query: string) => SuggestItem[];
 	inputPlaceholder?: string;
 	excludeTriggerKeys?: string[];
 }): JSX.Element {
+	const [value, setValue] = useState("");
+	const [hasSelected, setHasSelected] = useState(false);
+	const [showSuggest, setShowSuggest] = useState(false);
 	const { tags } = props;
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,31 +27,31 @@ export function InputTags(props: {
 		props.onChange(newTags);
 	};
 
+	const appendTag = (tagStr: string) => {
+		const id = randomUUID();
+		const newTags = [...tags, { id: id, value: tagStr }];
+		props.onChange(newTags);
+	};
+
 	// listen tab\enter\space\comma
-	useLayoutEffect(() => {
-		const onKeyDown = (e: KeyboardEvent) => {
-			const { key } = e;
-
-			if (props.excludeTriggerKeys?.includes(key)) {
-				return;
+	const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (hasSelected) {
+			return;
+		}
+		const { key } = e;
+		if (props.excludeTriggerKeys?.includes(key)) {
+			return;
+		}
+		if (key === "Tab" || key === "Enter" || key === " ") {
+			e.preventDefault();
+			setShowSuggest(false);
+			const value = inputRef.current?.value;
+			if (value) {
+				appendTag(value);
+				inputRef.current!.value = "";
 			}
-
-			if (key === "Tab" || key === "Enter" || key === " ") {
-				e.preventDefault();
-				const value = inputRef.current?.value;
-				const id = randomUUID();
-				if (value) {
-					const newTags = [...tags, { id, value }];
-					props.onChange(newTags);
-					inputRef.current!.value = "";
-				}
-			}
-		};
-		inputRef.current?.addEventListener("keydown", onKeyDown);
-		return () => {
-			inputRef.current?.removeEventListener("keydown", onKeyDown);
-		};
-	});
+		}
+	};
 
 	return (
 		<>
@@ -71,8 +76,45 @@ export function InputTags(props: {
 					ref={inputRef}
 					className="input"
 					placeholder={props.inputPlaceholder}
+					onKeyDown={(e) => handleInputKeyDown(e)}
+					onChange={(e) => {
+						setValue(e.target.value);
+						if (!showSuggest) {
+							setShowSuggest(true);
+						}
+					}}
 				/>
 			</div>
+			{inputRef.current && (
+				<Suggest
+					query={value || ""}
+					showSuggest={showSuggest}
+					getItems={() => {
+						if (props.getItems) {
+							return props.getItems(value);
+						}
+						return [];
+					}}
+					onSelected={(item, index) => {
+						if (showSuggest) {
+							setShowSuggest(false);
+						}
+						if (index >= 0) {
+							appendTag(item.value);
+							inputRef.current!.value = "";
+						}
+					}}
+					onSelectChange={(item, index) => {
+						if (index >= 0) {
+							setHasSelected(true);
+						} else {
+							setHasSelected(false);
+						}
+					}}
+					anchorElement={inputRef.current}
+					onOpenChange={(show) => setShowSuggest(show)}
+				/>
+			)}
 		</>
 	);
 }

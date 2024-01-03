@@ -1,4 +1,6 @@
-import { env } from "process";
+export const env = {
+	mode: "dev",
+}
 
 export function log(content: string, ...args: any) {
 	if (env.mode != "production") {

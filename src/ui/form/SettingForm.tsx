@@ -16,7 +16,7 @@ import { ReactNode, useState } from "react";
 import { getLocal } from "src/i18/messages";
 import { InputTags } from "../tags/InputTags";
 import { DateTime } from "luxon";
-import { DEFAULT_DATETIME_FORMAT } from "src/manager/constants";
+import { DEFAULT_DATETIME_FORMAT, SAMPLE_DATE } from "src/manager/constants";
 import { swapSave } from "src/util/sort";
 import { ChevronDown, ChevronUp, Folder, Tags, File } from "lucide-react";
 import {
@@ -29,14 +29,25 @@ import {
 	useHover,
 	useInteractions,
 } from "@floating-ui/react";
+import {
+	getDateTimeOptions,
+	getFolderOptions,
+	getTagOptions,
+	getVariableOptions,
+} from "../suggestOptions";
+import { SuggestInput } from "../suggest/SuggestInput";
+import { useObsidianApp } from "src/context/obsidianAppContext";
+import { SuggestItem } from "../suggest/Suggest";
 
 export function SettingForm(props: {
 	title: string;
 	config: AttachmentProConfig;
 	onChange: (config: AttachmentProConfig) => void;
 }): JSX.Element {
+	const app = useObsidianApp();
 	const { onChange } = props;
 	const [config, setConfig] = useState(props.config);
+
 	const local = getLocal();
 
 	const onRuleChange = (rule: AttachmentRule) => {
@@ -195,20 +206,36 @@ export function SettingForm(props: {
 									rule.strategy.type
 								) ? (
 									<>
-										<input
-											type="text"
-											placeholder={
+										<SuggestInput
+											inputPlaceholder={
 												local.FILE_POSITION_PATH_INPUT_PLACEHOLDER
 											}
-											defaultValue={rule.strategy.path}
-											onChange={(e) => {
+											onInputChange={(value: string) => {
 												onRuleChange({
 													...rule,
 													strategy: {
 														...rule.strategy,
-														path: e.target.value,
+														path: value,
 													},
 												});
+											}}
+											onSelected={(item) => {
+												onRuleChange({
+													...rule,
+													strategy: {
+														...rule.strategy,
+														path: item.value,
+													},
+												});
+											}}
+											defaultInputValue={
+												rule.strategy.path
+											}
+											getItems={(query: string) => {
+												return [...getFolderOptions(
+													query,
+													app
+												), ...getVariableOptions(query)];
 											}}
 										/>
 									</>
@@ -346,22 +373,35 @@ export function SettingForm(props: {
 								{rule.nameFormat.type === "DATETIME" ||
 								rule.nameFormat.type === "CUSTOMIZE" ? (
 									<>
-										<input
-											type="text"
-											placeholder={
+										<SuggestInput
+											inputPlaceholder={
 												local.FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER
 											}
-											defaultValue={
+											defaultInputValue={
 												rule.nameFormat.format
 											}
-											onChange={(e) => {
+											onInputChange={(value) => {
 												onRuleChange({
 													...rule,
 													nameFormat: {
 														...rule.nameFormat,
-														format: e.target.value,
+														format: value,
 													},
 												});
+											}}
+											onSelected={(item) => {
+												onRuleChange({
+													...rule,
+													nameFormat: {
+														...rule.nameFormat,
+														format: item.value,
+													},
+												});
+											}}
+											getItems={(query: string) => {
+												return getDateTimeOptions(
+													query
+												);
 											}}
 										/>
 									</>
@@ -372,10 +412,12 @@ export function SettingForm(props: {
 										{local.FILE_NAME_FORMAT_DATTIME_SAMPLE}
 										{": "}
 										{rule.nameFormat.format
-											? DateTime.now().toFormat(
+											? DateTime.fromJSDate(
+													SAMPLE_DATE
+											).toFormat(
 													rule.nameFormat.format ||
 														DEFAULT_DATETIME_FORMAT
-											  )
+											)
 											: ""}
 									</div>
 								) : null}
@@ -407,6 +449,7 @@ function ScopeInputTag(props: {
 }): JSX.Element {
 	const { scope } = props;
 	const local = getLocal();
+	const app = useObsidianApp();
 
 	const scopeTypes: AttachmentScopeType[] = [
 		"ATTACHMENT_FILE_EXTENSION",
@@ -422,21 +465,26 @@ function ScopeInputTag(props: {
 
 	let placeholder = "";
 	let icon: ReactNode | null = null;
+	let getItems: (query: string) => SuggestItem[];
 	switch (scope.type) {
 		case "ATTACHMENT_FILE_EXTENSION":
 			icon = <File />;
 			placeholder = local.SCOPE_EXTENSION_VALUE_INPUT_PLACEHOLDER;
+			getItems = () => [];
 			break;
 		case "SPECIFIC_FILE_FOLDER":
 			icon = <Folder />;
 			placeholder = local.SCOPE_SPCIFIC_FOLDER_INPUT_PLACEHOLDER;
+			getItems = (query) => getFolderOptions(query, app);
 			break;
 		case "FILE_TAG":
 			icon = <Tags />;
 			placeholder = local.SCOPE_TAG_VALUE_INPUT_PLACEHOLDER;
+			getItems = (query) => getTagOptions(query, app);
 			break;
 		default:
 			icon = null;
+			getItems = () => [];
 	}
 	const tags =
 		//@ts-ignore
@@ -453,8 +501,16 @@ function ScopeInputTag(props: {
 			tags={tags}
 			excludeTriggerKeys={excludeTriggerKeys}
 			onChange={(newTags) => {
-				props.onChange(newTags);
+				props.onChange(
+					newTags.map((t) => {
+						return {
+							id: t.id,
+							value: t.value,
+						};
+					})
+				);
 			}}
+			getItems={getItems}
 			onRemove={(tag) => {}}
 		/>
 	);

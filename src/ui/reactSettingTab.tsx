@@ -4,6 +4,7 @@ import { Root, createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { SettingForm } from "./form/SettingForm";
 import { getLocal } from "src/i18/messages";
+import { ObsidianAppContext } from "src/context/obsidianAppContext";
 
 export default class ReactAttachmentSettingTab extends PluginSettingTab {
 	plugin: AttachmentProPlugin;
@@ -17,22 +18,26 @@ export default class ReactAttachmentSettingTab extends PluginSettingTab {
 
 	display() {
 		const { containerEl } = this;
+		containerEl.empty();
 		this.root = createRoot(containerEl);
 		this.root.render(
 			<StrictMode>
-				<SettingForm
-					title={this.plugin.manifest.name}
-					config={this.plugin.settings}
-					onChange={(config) => {
-						this.plugin.replaceSettings(config);
-					}}
-				/>
+				<ObsidianAppContext.Provider value={this.app}>
+					<SettingForm
+						title={this.plugin.manifest.name}
+						config={this.plugin.settings}
+						onChange={(config) => {
+							this.plugin.replaceSettings(config);
+						}}
+					/>
+				</ObsidianAppContext.Provider>
 			</StrictMode>
 		);
 	}
 
 	hide() {
 		this.root.unmount();
+		this.containerEl.empty();
 	}
 }
 
@@ -93,7 +98,6 @@ export const attachmentNameFormatOptions = [
 	// },
 ];
 
-
 export const operationOptions = [
 	{
 		value: "CONTAINS_ALL",
@@ -103,4 +107,4 @@ export const operationOptions = [
 		value: "CONTAINS_ANY",
 		label: getLocal().OPERATOR_CONTAINS_ANY,
 	},
-]
+];
