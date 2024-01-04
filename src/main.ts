@@ -20,7 +20,7 @@ export default class AttachmentProPlugin extends Plugin {
 		}
 	}
 
-	onunload() { }
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -58,6 +58,6 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	registerFileRenameHandler() {
-		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => { }));
+		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {}));
 	}
 }

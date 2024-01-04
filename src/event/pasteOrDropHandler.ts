@@ -2,7 +2,6 @@ import {
 	Editor,
 	MarkdownFileInfo,
 	MarkdownView,
-	Notice,
 	TFile,
 	htmlToMarkdown,
 } from "obsidian";
@@ -21,7 +20,6 @@ export default class PasteOrDropHandler {
 		plugin: AttachmentProPlugin
 	) {
 		const dataItems = this.getDataTransferItem(evt);
-		new Notice('begin handle paste or drop event', dataItems?.length)
 		if (!dataItems) {
 			log("[Event] ignoresd no data items");
 			return;
