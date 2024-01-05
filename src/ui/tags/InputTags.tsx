@@ -1,5 +1,4 @@
 import { ReactNode, useRef, useState } from "react";
-import { randomUUID } from "crypto";
 import { Suggest, SuggestItem } from "../suggest/Suggest";
 
 export class TagOption {
@@ -28,7 +27,7 @@ export function InputTags(props: {
 	};
 
 	const appendTag = (tagStr: string) => {
-		const id = randomUUID();
+		const id = new Date().getTime().toString() + "_" + tagStr;
 		const newTags = [...tags, { id: id, value: tagStr }];
 		props.onChange(newTags);
 	};

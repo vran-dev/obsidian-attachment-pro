@@ -4,7 +4,7 @@ import {
 	AttachmentNameFormat,
 } from "src/manager/types";
 import { AttachmentNameFormatter } from "./attachmentNameFormatter";
-import { randomUUID } from "crypto";
+import { v4 as uuidv4 } from 'uuid';
 
 export class UuidAttachmentNameFormatter implements AttachmentNameFormatter {
 	accept(type: AttachmentNameFormatType): boolean {
@@ -18,7 +18,7 @@ export class UuidAttachmentNameFormatter implements AttachmentNameFormatter {
 		app: App
 	): string {
 		return (
-			randomUUID().replace(/-/g, "") +
+			uuidv4().replace(/-/g, "") +
 			"." +
 			attachmentFile.name.split(".").pop()
 		);

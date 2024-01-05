@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 as uuid } from 'uuid'
 
 export interface AttachmentProConfig {
 	version: 0;
@@ -58,12 +58,12 @@ export class DefaultRule implements AttachmentRule {
 	nameFormat: AttachmentNameFormat;
 
 	constructor() {
-		this.id = randomUUID();
+		this.id =  uuid();
 		this.sort = 0;
 		this.enabled = true;
 		this.scopes = [
 			{
-				id: randomUUID(),
+				id: uuid(),
 				type: "ALL",
 			},
 		];
