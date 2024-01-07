@@ -4,6 +4,7 @@ import { DEFAULT_SETTINGS } from "./setting/defaultSetting";
 import { log } from "./util/log";
 import PasteOrDropHandler from "./event/pasteOrDropHandler";
 import ReactAttachmentSettingTab from "./ui/reactSettingTab";
+import { ClearUnusedAttachmentsModal } from "./ui/obsidian-modal/clearUnusedAttachmentsModal";
 
 export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
@@ -14,6 +15,7 @@ export default class AttachmentProPlugin extends Plugin {
 			this.registerEditorPasteHandler();
 			this.registerEditorDropHandler();
 			this.registerFileRenameHandler();
+			this.registerCommands();
 			this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
 		} catch (e) {
 			new Notice('error when load plugin "Attachment Pro"' + e.message);
@@ -59,5 +61,15 @@ export default class AttachmentProPlugin extends Plugin {
 
 	registerFileRenameHandler() {
 		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {}));
+	}
+
+	registerCommands() {
+		this.addCommand({
+			id: "clear-unused-attachments",
+			name: "Clear Unused Attachments",
+			callback: () => {
+				new ClearUnusedAttachmentsModal(this.app, this).open();
+			},
+		});
 	}
 }
