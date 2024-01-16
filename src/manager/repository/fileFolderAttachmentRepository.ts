@@ -1,19 +1,20 @@
-import { AttachmentSaveStrategyType } from "src/manager/types";
+import { AttachmentSaveType } from "src/manager/types";
 import {
-	AttachmentSaveStrategyContext,
-	AttachmentSaveStrategyHandler,
-} from "./attachmentSaveStrategyHandler";
+	AttachmentRepositoryContext,
+	AttachmentRepository,
+	AttachmentResult,
+} from "./attachmentSaveRepository";
 import { TFile, normalizePath } from "obsidian";
 import { appendOrderIfConflict, getParentFolderFromTFile } from "src/util/file";
 
-export default class FileFolderAttachmentSaveStrategyHandler
-	implements AttachmentSaveStrategyHandler
+export default class FileFolderAttachmentRepository
+	implements AttachmentRepository
 {
-	accept(scope: AttachmentSaveStrategyType): boolean {
+	accept(scope: AttachmentSaveType): boolean {
 		return scope == "FILE_FOLDER";
 	}
 
-	async handle(context: AttachmentSaveStrategyContext): Promise<string> {
+	async save(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
 		const buffer = await context.attachmentFile.arrayBuffer();
 		const fullPath = this.resolePath(
 			context.formatedAttachmentName,
@@ -21,10 +22,14 @@ export default class FileFolderAttachmentSaveStrategyHandler
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
 		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		return context.app.fileManager.generateMarkdownLink(
+		const link =  context.app.fileManager.generateMarkdownLink(
 			tFile,
 			context.pageFile.path
 		);
+		return {
+			file: tFile,
+			link: link
+		}
 	}
 
 	resolePath(attachmentName: string, pageFile: TFile) {

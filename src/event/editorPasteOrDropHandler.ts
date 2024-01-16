@@ -10,7 +10,7 @@ import AttachmentManager from "../manager/attachmentManager";
 import AttachmentProPlugin from "src/main";
 import { log } from "src/util/log";
 
-export default class PasteOrDropHandler {
+export default class EditorPasteOrDropHandler {
 	attachmentManager = new AttachmentManager();
 
 	on(
@@ -82,7 +82,7 @@ export default class PasteOrDropHandler {
 		const file = item.getAsFile();
 		if (file) {
 			log("[Event] prepare to handle " + file.name);
-			return this.attachmentManager.onAttachmentSave(
+			return this.attachmentManager.onEditorAttachmentSave(
 				pageFile,
 				plugin.settings,
 				editor,

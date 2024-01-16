@@ -11,12 +11,12 @@ export interface AttachmentRule {
 	sort: number;
 	enabled: boolean;
 	scopes: AttachmentScope[];
-	strategy: AttachmentSaveStrategy;
+	repository: AttachmentRepositorySetting;
 	nameFormat: AttachmentNameFormat;
 }
 
-export interface AttachmentSaveStrategy {
-	type: AttachmentSaveStrategyType;
+export interface AttachmentRepositorySetting {
+	type: AttachmentSaveType;
 
 	[key: string]: string;
 }
@@ -32,7 +32,7 @@ export interface AttachmentNameFormat {
 	[key: string]: string;
 }
 
-export type AttachmentSaveStrategyType =
+export type AttachmentSaveType =
 	| "CUSTOMIZE"
 	| "FILE_FOLDER"
 	| "FILE_SUBFOLDER"
@@ -54,7 +54,7 @@ export class DefaultRule implements AttachmentRule {
 	sort: number;
 	enabled: boolean;
 	scopes: AttachmentScope[];
-	strategy: AttachmentSaveStrategy;
+	repository: AttachmentRepositorySetting;
 	nameFormat: AttachmentNameFormat;
 
 	constructor() {
@@ -67,7 +67,7 @@ export class DefaultRule implements AttachmentRule {
 				type: "ALL",
 			},
 		];
-		this.strategy = {
+		this.repository = {
 			type: "ROOT_FOLDER",
 		};
 		this.nameFormat = {

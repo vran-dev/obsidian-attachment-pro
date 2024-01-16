@@ -9,7 +9,7 @@ import {
 	attachmentNameFormatOptions,
 	operationOptions,
 	scopeOptions,
-	strategyOptions,
+	repositoryOptions,
 } from "../reactSettingTab";
 import { Select } from "../select/Select";
 import { ReactNode, useState } from "react";
@@ -189,12 +189,12 @@ export function SettingForm(props: {
 							</div>
 							<div className="form-vertical-content">
 								<Select
-									defaultValue={rule.strategy.type}
-									options={strategyOptions}
+									defaultValue={rule.repository.type}
+									options={repositoryOptions}
 									onChange={(value) => {
 										onRuleChange({
 											...rule,
-											strategy: {
+											repository: {
 												//@ts-ignore
 												type: value,
 												path: "",
@@ -203,7 +203,7 @@ export function SettingForm(props: {
 									}}
 								/>
 								{["FILE_SUBFOLDER", "CUSTOMIZE"].contains(
-									rule.strategy.type
+									rule.repository.type
 								) ? (
 									<>
 										<SuggestInput
@@ -213,8 +213,8 @@ export function SettingForm(props: {
 											onInputChange={(value: string) => {
 												onRuleChange({
 													...rule,
-													strategy: {
-														...rule.strategy,
+													repository: {
+														...rule.repository,
 														path: value,
 													},
 												});
@@ -222,14 +222,14 @@ export function SettingForm(props: {
 											onSelected={(item) => {
 												onRuleChange({
 													...rule,
-													strategy: {
-														...rule.strategy,
+													repository: {
+														...rule.repository,
 														path: item.value,
 													},
 												});
 											}}
 											defaultInputValue={
-												rule.strategy.path
+												rule.repository.path
 											}
 											getItems={(query: string) => {
 												return [...getFolderOptions(

@@ -1,18 +1,46 @@
 import { TFile, App, Editor } from "obsidian";
 import { AttachmentProConfig, DefaultRule } from "./types";
 import { AttachmentScopeMatchers } from "./scope/attachmentScopeMatcher";
-import { AttachmentSaveStrategyHandlers } from "./strategy/attachmentSaveStrategyHandler";
+import { AttachmentRepositories, AttachmentResult } from "./repository/attachmentSaveRepository";
 import { log } from "../util/log";
-import ObsidianAttachmentStrategyHandler from "./strategy/obsidianAttachmentStrategyHandler";
+import ObsidianAttachmentRepository from "./repository/obsidianAttachmentRepository";
 import { AttachmentNameFormatters } from "./format/attachmentNameFormatter";
 
 export default class AttachmentManager {
-	onAttachmentSave(
+	onEditorAttachmentSave(
 		page: TFile,
 		config: AttachmentProConfig,
 		editor: Editor,
 		app: App,
 		attachmentFile: File
+	) {
+		this.onAttachmentSave(
+			page,
+			config,
+			app,
+			attachmentFile,
+			(res) => {
+				editor.replaceSelection(res.link);
+			},
+			() =>
+				this.fallbackToDefaultRepository(
+					page,
+					app,
+					attachmentFile,
+					(res) => {
+						editor.replaceSelection(res.link);
+					}
+				)
+		);
+	}
+
+	onAttachmentSave(
+		page: TFile,
+		config: AttachmentProConfig,
+		app: App,
+		attachmentFile: File,
+		onSave: (link: AttachmentResult) => void,
+		fallback: () => void
 	) {
 		const enabledRules = config.rules.filter((r) => r.enabled);
 		log("[Enabled Rules] ", enabledRules);
@@ -32,27 +60,29 @@ export default class AttachmentManager {
 					rule,
 					app
 				);
-				AttachmentSaveStrategyHandlers.handle({
-					attachmentFile,
-					formatedAttachmentName: attachmentFileName,
-					pageFile: page,
-					rule,
-					editor,
-					app,
-				});
+				AttachmentRepositories.handle(
+					{
+						attachmentFile,
+						formatedAttachmentName: attachmentFileName,
+						pageFile: page,
+						rule,
+						app,
+					},
+					onSave
+				);
 				return;
 			}
 		}
-		this.fallbackToDefaultStrategy(page, editor, app, attachmentFile);
+		fallback();
 	}
 
-	fallbackToDefaultStrategy(
+	private fallbackToDefaultRepository(
 		page: TFile,
-		editor: Editor,
 		app: App,
-		attachmentFile: File
+		attachmentFile: File,
+		onSave: (link: AttachmentResult) => void
 	) {
-		// fallback to default strategy
+		// fallback to default repository
 		const rule = new DefaultRule();
 		const formattedName = AttachmentNameFormatters.format(
 			attachmentFile,
@@ -60,13 +90,16 @@ export default class AttachmentManager {
 			rule,
 			app
 		);
-		new ObsidianAttachmentStrategyHandler().handle({
-			attachmentFile,
-			formatedAttachmentName: formattedName,
-			pageFile: page,
-			rule: rule,
-			app,
-			editor,
-		});
+		new ObsidianAttachmentRepository()
+			.handle({
+				attachmentFile,
+				formatedAttachmentName: formattedName,
+				pageFile: page,
+				rule: rule,
+				app,
+			})
+			.then((attachment) => {
+				onSave(attachment);
+			});
 	}
 }

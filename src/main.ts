@@ -1,10 +1,17 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, CanvasView } from "obsidian";
 import { AttachmentProConfig } from "./manager/types";
 import { DEFAULT_SETTINGS } from "./setting/defaultSetting";
 import { log } from "./util/log";
-import PasteOrDropHandler from "./event/pasteOrDropHandler";
 import ReactAttachmentSettingTab from "./ui/reactSettingTab";
 import { ClearUnusedAttachmentsModal } from "./ui/obsidian-modal/clearUnusedAttachmentsModal";
+import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
+import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
+
+declare module "obsidian" {
+	interface CanvasView extends TextFileView {
+		handlePaste: (e: ClipboardEvent) => Promise<void>;
+	}
+}
 
 export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
@@ -15,6 +22,8 @@ export default class AttachmentProPlugin extends Plugin {
 			this.registerEditorPasteHandler();
 			this.registerEditorDropHandler();
 			this.registerFileRenameHandler();
+			// TODO
+			// this.registerCanvasPasteOrDropHandler();
 			this.registerCommands();
 			this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
 		} catch (e) {
@@ -46,7 +55,7 @@ export default class AttachmentProPlugin extends Plugin {
 	registerEditorPasteHandler() {
 		this.registerEvent(
 			this.app.workspace.on("editor-paste", (evt, editor, info) => {
-				new PasteOrDropHandler().on(evt, editor, info, this);
+				new EditorPasteOrDropHandler().on(evt, editor, info, this);
 			})
 		);
 	}
@@ -54,9 +63,23 @@ export default class AttachmentProPlugin extends Plugin {
 	registerEditorDropHandler() {
 		this.registerEvent(
 			this.app.workspace.on("editor-drop", (evt, editor, info) => {
-				new PasteOrDropHandler().on(evt, editor, info, this);
+				new EditorPasteOrDropHandler().on(evt, editor, info, this);
 			})
 		);
+	}
+
+	registerCanvasPasteOrDropHandler() {
+		this.app.workspace.on("active-leaf-change", (leaf) => {
+			if (!leaf) {
+				return;
+			}
+			const view = leaf.view;
+			if (view.getViewType() === "canvas") {
+				new CanvasPasteOrDropHandler(view as CanvasView).install(
+					this.settings
+				);
+			}
+		});
 	}
 
 	registerFileRenameHandler() {
@@ -66,7 +89,7 @@ export default class AttachmentProPlugin extends Plugin {
 	registerCommands() {
 		this.addCommand({
 			id: "clear-unused-attachments",
-			name: "Clear Unused Attachments",
+			name: "Clear Unused Attachments", 
 			callback: () => {
 				new ClearUnusedAttachmentsModal(this.app, this).open();
 			},

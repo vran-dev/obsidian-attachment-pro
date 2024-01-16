@@ -5,11 +5,11 @@ import {
 	joinFolder,
 } from "src/util/file";
 import { log } from "src/util/log";
-import { AttachmentSaveStrategyContext } from "./attachmentSaveStrategyHandler";
+import { AttachmentRepositoryContext, AttachmentResult } from "./attachmentSaveRepository";
 
-export default class ObsidianAttachmentStrategyHandler {
-	async handle(context: AttachmentSaveStrategyContext) {
-		log("[Strategy | Obsidian] use obsidian attachment strategy handler");
+export default class ObsidianAttachmentRepository {
+	async handle(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
+		log("[Repository | Obsidian] use obsidian attachment repository to save attachment");
 		// resolve and create folder
 		const obsidianAttachmentFolder = normalizePath(
 			//@ts-ignore
@@ -39,6 +39,9 @@ export default class ObsidianAttachmentStrategyHandler {
 			tFile,
 			context.pageFile.path
 		);
-		context.editor.replaceSelection(link);
+		return {
+			file: tFile,
+			link: link,
+		};
 	}
 }

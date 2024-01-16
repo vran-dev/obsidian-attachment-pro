@@ -17,7 +17,7 @@ export default class PathResolver {
 		app: App
 	) {
 		// normalize path variables
-		let subFolder = sanitizePath(rule.strategy.path);
+		let subFolder = sanitizePath(rule.repository.path);
 		subFolder = DefaultVariableHandler.handle(subFolder, app, pageFile);
 
 		// create folder if not exist
@@ -37,11 +37,11 @@ export default class PathResolver {
 		app: App
 	) {
 		// normalize path variables
-		let folder = sanitizePath(rule.strategy.path);
+		let folder = sanitizePath(rule.repository.path);
 		folder = DefaultVariableHandler.handle(folder, app, pageFile);
 		log(
 			"[Before Create Folder] saniziPath from " +
-				rule.strategy.path +
+				rule.repository.path +
 				" to " +
 				folder
 		);
