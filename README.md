@@ -1,96 +1,53 @@
-# Obsidian Sample Plugin
+## 介绍
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+attachmentPro 是一款 obsidian 附件管理插件，支持设置多个附件管理规则。
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+附件的规则优先级是按照设置的顺序来的，比如设置了两个规则，第一个规则的适用范围是 `指定目录`，第二个规则的适用范围是 `全部`，那么第一个规则会优先生效。
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+![alt text](attachment/image.png)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## 文件存放位置
 
-## First time developing plugins?
+| 选项 | 说明 |
+| --- | --- |
+| 仓库的根目录 | obsidian 笔记库的所在目录 |
+| 当前文件所在目录 | 即保存到所粘贴的笔记所在的目录下，比如笔记是 `notes/2024-01-01.md`，那么图片会保存在 `notes` 目录下 |
+| 当前文件所在子目录 | 需要指定一个目录路径，比如笔记是 `notes/2024-01-01.md`，如果指定的子目录是 `attachments`，那么附件会保存到 `notes/attachments/` 下 |
+| 自定义 | 可以引用变量（见下文），比如指定规则为 `${yearmonth}/`，插件就会将附件按年月分组保存在不同的目录下 |
 
-Quick starting guide for new plugin devs:
+## 适用范围
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+适用范围是指插件会在哪些笔记中、或者针对哪些附件生效，目前支持 4 种类型
 
-## Releasing new releases
+| 选项 | 说明 |
+| --- | --- |
+| 指定目录 | 只有笔记在指定的目录路径下才会应用该附件管理规则 |
+| 指定标签 | 笔记中包含指定标签时，才会应用该附件管理规则 |
+| 指定文件类型 | 附件类型，比如 `png`、`pdf` 等 |
+| 全部 | 适用于所有笔记，以及所有附件类型 |
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+## 文件名格式化
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+即重命名附件的名称，支持 4 种方式 
 
-## Adding your plugin to the community plugin list
+| 选项 | 说明 |
+| --- | --- |
+| 原始文件名 | 不做任何处理 |
+| 当前时间 | 以当前时间作为附件名称，可以自定义时间的格式 |
+| UUID | 生成一个唯一的 UUID |
+| 自定义格式 | 可以引用变量（见下文），比如笔记为 `2024-01-01`，重命名规则为 `${notename}-${timestamp}`，插件就会将附件重命名为 `2024-01-01-1708144120727` |
 
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## 变量
 
-## How to use
+| 变量名 | 描述 | 示例 |
+| --- | --- | --- |
+| ${attachmentName} | 附件名称 |  |
+| ${notename} | 笔记名称 |  |
+| ${timestamp} | 时间戳 | 1708144120727 |
+| ${now} | 当前时间，可以通过 ${now.toFormat('yyyyMMddHHmmss')} 来格式化 |  |
+| ${year} | 年 | 2024 |
+| ${yearmonth} | 年月 | 202401 |
+| ${file} | Obsidian 笔记文件对象 | |
+| ${frontmatter} | Obsidian 笔记 frontmatter 对象, 可以引用笔记的属性，比如 ${frontmatter.created} 就表示应用了 created 属性 | |
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
 
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
