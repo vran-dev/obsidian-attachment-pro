@@ -375,7 +375,9 @@ export function SettingForm(props: {
 									<>
 										<SuggestInput
 											inputPlaceholder={
-												local.FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER
+												rule.nameFormat.type === "DATETIME" ?
+												local.FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER:
+												local.FILE_NAME_FORMAT_CUSTOM_INPUT_PLACEHOLDER
 											}
 											defaultInputValue={
 												rule.nameFormat.format
@@ -409,7 +411,7 @@ export function SettingForm(props: {
 
 								{rule.nameFormat.type === "DATETIME" ? (
 									<div className="form-description">
-										{local.FILE_NAME_FORMAT_DATTIME_SAMPLE}
+										{local.EXAMPLE}
 										{": "}
 										{rule.nameFormat.format
 											? DateTime.fromJSDate(
@@ -421,6 +423,17 @@ export function SettingForm(props: {
 											: ""}
 									</div>
 								) : null}
+
+								{
+									// @ts-ignore
+									rule.nameFormat.type === "CUSTOMIZE" ? (
+										<div className="form-description">
+											{local.EXAMPLE}
+											{": "}
+											{local.FILE_NAME_FORMAT_CUSTOM_DESC}
+										</div>
+									) : null
+								}
 							</div>
 						</div>
 

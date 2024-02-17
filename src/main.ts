@@ -3,7 +3,6 @@ import { AttachmentProConfig } from "./manager/types";
 import { DEFAULT_SETTINGS } from "./setting/defaultSetting";
 import { log } from "./util/log";
 import ReactAttachmentSettingTab from "./ui/reactSettingTab";
-import { ClearUnusedAttachmentsModal } from "./ui/obsidian-modal/clearUnusedAttachmentsModal";
 import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
 import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
 
@@ -31,7 +30,7 @@ export default class AttachmentProPlugin extends Plugin {
 		}
 	}
 
-	onunload() {}
+	onunload() { }
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -83,16 +82,16 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	registerFileRenameHandler() {
-		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {}));
+		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => { }));
 	}
 
 	registerCommands() {
-		this.addCommand({
-			id: "clear-unused-attachments",
-			name: "Clear Unused Attachments", 
-			callback: () => {
-				new ClearUnusedAttachmentsModal(this.app, this).open();
-			},
-		});
+		// this.addCommand({
+		// 	id: "show-attachments",
+		// 	name: "show Attachments", 
+		// 	callback: () => {
+		// 		new AttachmentsModal(this.app, this).open();
+		// 	},
+		// });
 	}
 }

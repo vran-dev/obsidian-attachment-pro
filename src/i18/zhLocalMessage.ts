@@ -30,9 +30,10 @@ export default class ZhLocalMessage implements Message {
 	FILE_NAME_FORMAT_DATTIME_DESC =
 		this.FILE_NAME_FORMAT_DESC +
 		" 查看 <a href='https://moment.github.io/luxon/#/formatting?id=table-of-tokens'>Luxon Format</a>";
-	FILE_NAME_FORMAT_DATTIME_SAMPLE = "示例";
+	EXAMPLE = "示例";
 	FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER = "默认为 yyyyMMddHHmmss";
 	FILE_NAME_FORMAT_CUSTOM_INPUT_PLACEHOLDER = "请输入自定义格式";
+	FILE_NAME_FORMAT_CUSTOM_DESC = "你可以使用 ${attachmentName}, ${notename} 或 ${uuid} 等等";
 
 	// name format type
 	FILE_NAME_FORMAT_TYPE_DATETIME = "当前时间";

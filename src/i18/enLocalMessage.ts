@@ -29,10 +29,11 @@ export default class EnLocalMessage implements Message {
 	FILE_NAME_FORMAT_DATTIME_DESC =
 		this.FILE_NAME_FORMAT_DESC +
 		" see more <a href='https://moment.github.io/luxon/#/formatting?id=table-of-tokens'>Luxon Format</a>";
-	FILE_NAME_FORMAT_DATTIME_SAMPLE = "Example";
+	EXAMPLE = "Example";
 	FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER = "Default is yyyyMMddHHmmss";
 	FILE_NAME_FORMAT_CUSTOM_INPUT_PLACEHOLDER =
 		"Please enter the custom format";
+	FILE_NAME_FORMAT_CUSTOM_DESC = "you can use ${attachmentName}, ${notename} or ${uuid} and so on.";
 
 	// name format type
 	FILE_NAME_FORMAT_TYPE_DATETIME = "Current Time";

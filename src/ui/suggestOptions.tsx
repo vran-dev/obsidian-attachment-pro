@@ -28,11 +28,11 @@ export const dateTimeFormatOptions: SuggestItem[] = [
 
 export const variablesOptions: SuggestItem[] = [
 	{
-		id: "filename",
+		id: "notename",
 		icon: <Variable />,
-		label: "${filename}",
-		value: "${filename}",
-		description: "The name of the target page",
+		label: "${notename}",
+		value: "${notename}",
+		description: "The name of the target note page",
 	},
 	{
 		id: "year",
@@ -63,10 +63,10 @@ export const variablesOptions: SuggestItem[] = [
 		description: "luxon DateTime object reference, you can use any method",
 	},
 	{
-		id: "metadata",
+		id: "frontmatter-created",
 		icon: <Variable />,
-		label: "${metadata.created}",
-		value: "${metadata.created}",
+		label: "${frontmatter.created}",
+		value: "${frontmatter.created}",
 		description:
 			"page frontmatter metadata object reference, you can use it to reference property.",
 	},
@@ -75,7 +75,8 @@ export const variablesOptions: SuggestItem[] = [
 		icon: <Variable />,
 		label: "${file.name}",
 		value: "${file.name}",
-		description: "obsidian file object reference.",
+		description:
+			"page file object reference, you can use it to reference property, such as file.name, file.extension.",
 	},
 ];
 

@@ -3,7 +3,7 @@ import { StrictMode, Suspense, lazy } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ObsidianAppContext } from "src/context/obsidianAppContext";
 
-export class ClearUnusedAttachmentsModal extends Modal {
+export class AttachmentsModal extends Modal {
 	root: Root | null = null;
 
 	onSave?: (content: string) => void;

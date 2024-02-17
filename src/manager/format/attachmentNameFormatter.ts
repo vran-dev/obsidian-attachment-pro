@@ -8,6 +8,7 @@ import { DateTimeAttachmentNameFormatter } from "./dateTimeAttachmentNameFormatt
 import { UuidAttachmentNameFormatter } from "./uuidAttachmentNameFormatter";
 import { OriginalAttachmentNameFormatter } from "./originalAttachmentNameFormatter copy";
 import { log } from "src/util/log";
+import { CustomizeAttachmentNameFormatter } from "./customizeAttachmentNameFormatter";
 
 export interface AttachmentNameFormatter {
 	accept(type: AttachmentNameFormatType): boolean;
@@ -24,6 +25,7 @@ export const attachmentNameFormatters: AttachmentNameFormatter[] = [
 	new DateTimeAttachmentNameFormatter(),
 	new OriginalAttachmentNameFormatter(),
 	new UuidAttachmentNameFormatter(),
+	new CustomizeAttachmentNameFormatter(),
 ];
 
 export class AttachmentNameFormatters {
@@ -45,11 +47,11 @@ export class AttachmentNameFormatters {
 			);
 			log(
 				"[Formatter Match] type: " +
-					rule.nameFormat.type +
-					", format name from " +
-					attachmentFile.name +
-					" to " +
-					attachmentName
+				rule.nameFormat.type +
+				", format name from " +
+				attachmentFile.name +
+				" to " +
+				attachmentName
 			);
 			return attachmentName;
 		}

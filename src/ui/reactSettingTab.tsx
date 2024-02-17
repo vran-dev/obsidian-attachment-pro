@@ -92,10 +92,10 @@ export const attachmentNameFormatOptions = [
 		value: "UUID",
 		label: getLocal().FILE_NAME_FORMAT_TYPE_UUID,
 	},
-	// {
-	// 	value: "CUSTOMIZE",
-	// 	label: getLocal().FILE_NAME_FORMAT_TYPE_CUSTOM,
-	// },
+	{
+		value: "CUSTOMIZE",
+		label: getLocal().FILE_NAME_FORMAT_TYPE_CUSTOM,
+	},
 ];
 
 export const operationOptions = [

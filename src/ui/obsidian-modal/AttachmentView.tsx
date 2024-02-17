@@ -2,7 +2,7 @@ import { TFile } from "obsidian";
 import { useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
-import { File, Folder } from "lucide-react";
+import { File } from "lucide-react";
 import Select, { MultiValue } from "react-select";
 
 class AttachmentFilter {
