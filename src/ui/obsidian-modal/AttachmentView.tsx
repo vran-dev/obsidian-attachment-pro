@@ -65,7 +65,6 @@ export default function AttachmentView(): JSX.Element {
 			})
 			.filter((attachment) => {
 				if (filter.extension.length > 0) {
-					console.log(filter.extension);
 					return filter.extension.includes(attachment.extension);
 				}
 				return true;
