@@ -149,6 +149,7 @@ export default function AttachmentView(): JSX.Element {
 									) ? (
 										<div className="item-preview">
 											<img
+												draggable={true}
 												src={app.vault.adapter.getResourcePath(
 													attachment.path
 												)}

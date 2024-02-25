@@ -5,6 +5,9 @@ import { log } from "./util/log";
 import ReactAttachmentSettingTab from "./ui/reactSettingTab";
 import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
 import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
+import '../style/styles.css'
+import '../style/suggest.css'
+import { AttachmentsModal } from "./ui/obsidian-modal/AttachmentsModal";
 
 declare module "obsidian" {
 	interface CanvasView extends TextFileView {

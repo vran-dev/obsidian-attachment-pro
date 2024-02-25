@@ -12,9 +12,12 @@ export class AttachmentsModal extends Modal {
 
 	plugin: Plugin;
 
-	constructor(app: App, plugin: Plugin) {
+	showAll: boolean;
+
+	constructor(app: App, plugin: Plugin, showAll?: boolean) {
 		super(app);
 		this.plugin = plugin;
+		this.showAll = showAll == true;
 	}
 
 	async onOpen(): Promise<void> {
