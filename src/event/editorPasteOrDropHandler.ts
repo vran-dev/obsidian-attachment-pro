@@ -37,6 +37,14 @@ export default class EditorPasteOrDropHandler {
 		}
 
 		log("[Event] prepare to handle " + dataItems.length + " items");
+
+		if (dataItems.length == 2 && dataItems[0].type == "text/html" && dataItems[1].kind == "file"){
+			log("[Event] found network image with string, only process the file.");
+			this.handleFile(dataItems[1], pageFile, editor, plugin);
+			evt.preventDefault();
+			return;
+		}
+		
 		for (let i = dataItems.length - 1; i >= 0; i--) {
 			const item = dataItems[i];
 			if (item.kind == "file") {
