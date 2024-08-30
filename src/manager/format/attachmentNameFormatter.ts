@@ -17,7 +17,8 @@ export interface AttachmentNameFormatter {
 		attachmentFile: File,
 		pageFile: TFile,
 		format: AttachmentNameFormat,
-		app: App
+		app: App,
+		index?: number
 	): string;
 }
 
@@ -33,7 +34,8 @@ export class AttachmentNameFormatters {
 		attachmentFile: File,
 		pageFile: TFile,
 		rule: AttachmentRule,
-		app: App
+		app: App,
+		index?: number
 	) {
 		const formatter = attachmentNameFormatters.find((formatter) =>
 			formatter.accept(rule.nameFormat.type)
@@ -43,7 +45,8 @@ export class AttachmentNameFormatters {
 				attachmentFile,
 				pageFile,
 				rule.nameFormat,
-				app
+				app,
+				index
 			);
 			log(
 				"[Formatter Match] type: " +

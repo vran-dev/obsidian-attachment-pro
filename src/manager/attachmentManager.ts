@@ -12,13 +12,15 @@ export default class AttachmentManager {
 		config: AttachmentProConfig,
 		editor: Editor,
 		app: App,
-		attachmentFile: File
+		attachmentFile: File,
+		index: number
 	) {
 		this.onAttachmentSave(
 			page,
 			config,
 			app,
 			attachmentFile,
+			index,
 			(res) => {
 				editor.replaceSelection(res.link);
 			},
@@ -39,6 +41,7 @@ export default class AttachmentManager {
 		config: AttachmentProConfig,
 		app: App,
 		attachmentFile: File,
+		index: number,
 		onSave: (link: AttachmentResult) => void,
 		fallback: () => void
 	) {
@@ -58,7 +61,8 @@ export default class AttachmentManager {
 					attachmentFile,
 					page,
 					rule,
-					app
+					app,
+					index
 				);
 				AttachmentRepositories.handle(
 					{

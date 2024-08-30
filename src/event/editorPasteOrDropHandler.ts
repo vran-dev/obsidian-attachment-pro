@@ -45,6 +45,10 @@ export default class EditorPasteOrDropHandler {
 			return;
 		}
 		
+		if (dataItems.length >= 2) {
+			console.log("Processing multiple items");
+		}
+
 		for (let i = dataItems.length - 1; i >= 0; i--) {
 			const item = dataItems[i];
 			if (item.kind == "file") {
