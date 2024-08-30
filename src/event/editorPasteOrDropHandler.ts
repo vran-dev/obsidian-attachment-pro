@@ -40,19 +40,17 @@ export default class EditorPasteOrDropHandler {
 
 		if (dataItems.length == 2 && dataItems[0].type == "text/html" && dataItems[1].kind == "file"){
 			log("[Event] found network image with string, only process the file.");
-			this.handleFile(dataItems[1], pageFile, editor, plugin);
+			this.handleFile(dataItems[1], pageFile, editor, plugin, -1);
 			evt.preventDefault();
 			return;
 		}
 		
-		if (dataItems.length >= 2) {
-			console.log("Processing multiple items");
-		}
-
 		for (let i = dataItems.length - 1; i >= 0; i--) {
 			const item = dataItems[i];
+
+			const index = dataItems.length - i - 1;
 			if (item.kind == "file") {
-				this.handleFile(item, pageFile, editor, plugin);
+				this.handleFile(item, pageFile, editor, plugin, index);
 			} else {
 				this.handleString(item, editor);
 			}
@@ -89,7 +87,8 @@ export default class EditorPasteOrDropHandler {
 		item: DataTransferItem,
 		pageFile: TFile,
 		editor: Editor,
-		plugin: AttachmentProPlugin
+		plugin: AttachmentProPlugin,
+		index: number
 	) {
 		const file = item.getAsFile();
 		if (file) {
@@ -99,7 +98,8 @@ export default class EditorPasteOrDropHandler {
 				plugin.settings,
 				editor,
 				plugin.app,
-				file
+				file,
+				index
 			);
 		} else {
 			log("[File Not Exists]", item);

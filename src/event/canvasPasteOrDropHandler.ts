@@ -35,6 +35,7 @@ export default class CanvasPasteOrDropHandler {
 				return;
 			}
 			for (let i = dataItems.length - 1; i >= 0; i--) {
+				const index = dataItems.length - i - 1;
 				const item = dataItems[i];
 				if (item.kind == "file") {
 					const attachmentFile = item.getAsFile();
@@ -46,6 +47,7 @@ export default class CanvasPasteOrDropHandler {
 						config,
 						this.canvasView.app,
 						attachmentFile,
+						index,
 						(result) => {
 							// @ts-ignore
 							const canvas = this.canvasView.canvas;
