@@ -40,7 +40,7 @@ export default class EditorPasteOrDropHandler {
 
 		if (dataItems.length == 2 && dataItems[0].type == "text/html" && dataItems[1].kind == "file"){
 			log("[Event] found network image with string, only process the file.");
-			this.handleFile(dataItems[1], pageFile, editor, plugin, -1);
+			this.handleFile(dataItems[1], pageFile, editor, plugin, 0);
 			evt.preventDefault();
 			return;
 		}
