@@ -33,7 +33,7 @@ export class VariableContext {
 export default class DefaultVariableHandler {
 	constructor() {}
 
-	static handle(input: string, app: App, file: TFile, attachment?: File): string {
+	static handle(input: string, app: App, file: TFile, attachment?: File, index?: number): string {
 		if (input == undefined || input == null || input.trim() == "") return input;
 
 		// eslint-disable-next-line
@@ -46,6 +46,10 @@ export default class DefaultVariableHandler {
 				return value !== undefined ? String(value) : placeholder;
 			}
 		);
+
+		if (index && index > 0 ){
+			return replacedText+`-${index.toString().padStart(2, '0')}`;
+		}
 		return replacedText;
 	}
 }

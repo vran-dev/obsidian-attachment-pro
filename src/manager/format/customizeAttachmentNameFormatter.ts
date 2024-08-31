@@ -15,12 +15,17 @@ export class CustomizeAttachmentNameFormatter implements AttachmentNameFormatter
 		attachmentFile: File,
 		pageFile: TFile,
 		format: AttachmentNameFormat,
-		app: App
+		app: App,
+		index?: number
 	): string {
 		const fileExtension = attachmentFile.name.split(".").pop();
 		const value = format.format
 		const filename = DefaultVariableHandler.handle(value, app, pageFile, attachmentFile);
 		if (fileExtension && fileExtension.trim().length > 0) {
+			if (index && index > 0)
+			{
+				return `${filename}-${index.toString().padStart(2, '0')}.${fileExtension}`;
+			}
 			return `${filename}.${fileExtension}`;
 		} else {
 			return `${filename}`;
