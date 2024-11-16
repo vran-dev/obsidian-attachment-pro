@@ -24,7 +24,7 @@ export default class FileSubfolderAttachmentRepository
 			context.app
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
-		const tFile = await app.vault.createBinary(filePath, buffer);
+		const tFile = await context.app.vault.createBinary(filePath, buffer);
 		const link = context.app.fileManager.generateMarkdownLink(
 			tFile,
 			context.pageFile.path
