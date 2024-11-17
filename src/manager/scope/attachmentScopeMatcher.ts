@@ -5,7 +5,7 @@ import FileTagAttachmentScopeMatcher from "./fileTagAttachmentScopeMatcher";
 import AttachmentExtensionAttachmentScopeHandler from "./attachmentExtensionAttachmentScopeMatcher";
 import CustomizeAttachmentScopeMatcher from "./customizeAttachmentScopeMatcher";
 import { log } from "src/util/log";
-import SpecificFileFolderAttachmentScopeMatcher from "./spcificFolderAttachmentScopeMatcher";
+import SpecificFileFolderAttachmentScopeMatcher from "./specificFolderAttachmentScopeMatcher";
 
 export interface AttachmentScopeMatcher {
 	accept(scope: AttachmentScope): boolean;
