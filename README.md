@@ -50,4 +50,12 @@ attachmentPro 是一款 obsidian 附件管理插件，支持设置多个附件�
 | ${file} | Obsidian 笔记文件对象 | |
 | ${frontmatter} | Obsidian 笔记 frontmatter 对象, 可以引用笔记的属性，比如 ${frontmatter.created} 就表示应用了 created 属性 | |
 
+## 附件库使用方法
+- `ctrl+p`(默认快捷键)打开obsidian命令窗口，
+- 输入`Show Attachments`，选择`Attachment Pro: Show Attachments`命令，打开附件库。
+![alt text](attachment/README-Screenshot_241117_123739.png)
 
+**或者**
+
+- 在左侧 边栏中点击`Show Attachments`图标，打开附件库。
+![alt text](attachment/README-Screenshot_241117_123649.png)
