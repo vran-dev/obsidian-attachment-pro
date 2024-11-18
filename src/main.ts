@@ -7,7 +7,7 @@ import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
 import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
 import '../style/styles.css'
 import '../style/suggest.css'
-import '../style/Modal.css'
+import '../style/modal.css'
 import { AttachmentsModal } from "./ui/obsidian-modal/AttachmentsModal";
 
 declare module "obsidian" {
@@ -92,7 +92,7 @@ export default class AttachmentProPlugin extends Plugin {
 	registerCommands() {
 		this.addCommand({
 			id: "show-attachments",
-			name: "show Attachments", 
+			name: "Show Attachments", 
 			callback: () => {
 				new AttachmentsModal(this.app, this).open();
 			},

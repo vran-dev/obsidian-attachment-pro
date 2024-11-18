@@ -129,7 +129,7 @@ export default function AttachmentView(): JSX.Element {
 		const allImageOption = { value: 'AllImages', label: 'Images(All)' };
 
 		return (
-			<div className="header">
+			<div className="attachmentsPro--Header">
 				<Select
 					isMulti
 					name="extensions"
@@ -206,8 +206,8 @@ export default function AttachmentView(): JSX.Element {
 		if (!selectedFile) return null;
 
 		return (
-			<div className="item-modal" onClick={() => setSelectedFile(null)}>
-				<div className="item-modal-content">
+			<div className="attachmentsPro--ItemModal" onClick={() => setSelectedFile(null)}>
+				<div className="attachmentsPro--ItemModalContent">
 					{selectedFileType && imageExtensions.includes(selectedFileType)
 					? 
 					(
@@ -269,11 +269,11 @@ export default function AttachmentView(): JSX.Element {
 
 		return (
 		<>
-			<div className="content">
+			<div className="attachmentsPro--Content">
 				{attachments.map((attachment) => (
-					<div className="attachment-item" key={attachment.path}>
+					<div className="attachmentsPro--Item" key={attachment.path}>
 						<div 
-							className="item-preview"
+							className="attachmentsPro--ItemPreview"
 							onClick={() => {
 								setSelectedFile(app.vault.adapter.getResourcePath(attachment.path));
 								setSelectedFileType(attachment.extension);
@@ -281,7 +281,7 @@ export default function AttachmentView(): JSX.Element {
 						>
 							{renderPreview(attachment)}
 						</div>
-						<div className="item-name">
+						<div className="attachmentsPro--ItemName">
 							<a
 								className="internal-link"
 								href={attachment.path}
@@ -311,7 +311,7 @@ export default function AttachmentView(): JSX.Element {
 		setPage: React.Dispatch<React.SetStateAction<number>>;
 		totalPages: number;
 	}) => (
-		<div className="pagination">
+		<div className="attachmentsPro--Pagination">
 			<button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
 				Prev
 			</button>
@@ -326,7 +326,7 @@ export default function AttachmentView(): JSX.Element {
 
 	return (
 		<>
-		<div className="attachment-view-container">
+		<div className="attachmentsPro--ViewContainer">
 			{
 				Header({
 					filter,
