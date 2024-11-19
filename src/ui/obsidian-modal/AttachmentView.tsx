@@ -24,8 +24,8 @@ export default function AttachmentView(): JSX.Element {
 	const [pageSize, setPageSize] = useState(10);
 	const [filter, setFilter] = useState(new AttachmentFilter());
 	const [onlyOrphan, setOnlyOrphan] = useState(filter.unused);
-	const [selectedFile, setSelectedFile] = useState<string | null>(null);
-	const [selectedFileType, setSelectedFileType] = useState<string | null>(null);
+	const [selectedFile, setSelectedFile] = useState<TFile>();
+	const [selectedFileType, setSelectedFileType] = useState<string>("");
 
 	const imageExtensions = [
 		"png",
@@ -37,8 +37,12 @@ export default function AttachmentView(): JSX.Element {
 		"bmp"
 	];
 	const supportPreviewExtensions = [...imageExtensions, 
-		"canvas",
-		"html",
+		// "md",
+		// "canvas",
+		// "components",
+		// "html",
+		// "json",
+		// "js",
 	];
 	const pageSizeOptions = [
     { value: 10, label: "10" },
@@ -199,34 +203,43 @@ export default function AttachmentView(): JSX.Element {
 		selectedFileType,
 		setSelectedFile,
 	}: {
-		selectedFile: string | null;
-		selectedFileType: string | null;
-		setSelectedFile: React.Dispatch<React.SetStateAction<string | null>>;
+		selectedFile: TFile;
+		selectedFileType: string;
+		setSelectedFile: React.Dispatch<React.SetStateAction<TFile | undefined>>;
 	}) => {
 		if (!selectedFile) return null;
 
+		const renderPreview = (selectedFile: TFile, selectedFileType: string) => {
+			if ( supportPreviewExtensions.includes(selectedFileType)) {
+				const filePath = app.vault.adapter.getResourcePath(selectedFile.path);
+
+				if (imageExtensions.includes(selectedFileType)) {
+					return (
+						<img
+							draggable={true}
+							src={filePath}
+							alt={selectedFile.name}
+						/>
+					);
+				}
+			}
+			else {
+				return (
+					<div>can't preview this file type</div>
+				)
+			}
+		};
+
 		return (
-			<div className="attachmentsPro--ItemModal" onClick={() => setSelectedFile(null)}>
-				<div className="attachmentsPro--ItemModalContent">
-					{selectedFileType && imageExtensions.includes(selectedFileType)
-					? 
-					(
-						<img src={selectedFile} alt="Preview" />
-					) 
-					// : 
-					// selectedFileType === "html" ? (
-					// 	<iframe
-					// 		src={selectedFile}
-					// 		title="Preview"
-					// 		sandbox="allow-same-origin allow-scripts"
-					// 		style={{ width: "100%", height: "500px", border: "none" }}
-					// 	/>
-					// ) 
-					: 
-					(
-						<div>can't preview this file type</div>
-					)
-					}
+			<div 
+				className="attachmentsPro--ItemModal" 
+				onClick={() => setSelectedFile(undefined)}
+			>
+				<div 
+					className="attachmentsPro--ItemModalContent" 
+					// onClick={(e) => e.stopPropagation()}
+				>
+					{renderPreview(selectedFile, selectedFileType)}
 				</div>
 			</div>
 		);
@@ -244,6 +257,7 @@ export default function AttachmentView(): JSX.Element {
 		const renderPreview = (attachment: TFile) => {
 			if (supportPreviewExtensions.includes(attachment.extension)){
 				const filePath = app.vault.adapter.getResourcePath(attachment.path);
+
 				if (imageExtensions.includes(attachment.extension)) {
 					return (
 						<img
@@ -253,29 +267,24 @@ export default function AttachmentView(): JSX.Element {
 						/>
 					);
 				}
-				// else if (attachment.extension === "html") {
-				// 	return (
-				// 		<iframe
-				// 			src={filePath.replace(/^app:\/\/[a-z0-9]+\/?/i, "")}
-				// 			title={attachment.name}
-				// 			sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-				// 			style={{ width: "100%", height: "500px", border: "none" }}
-				// 		/>
-				// 	);
-				// }
 			}
 			return <File />;
 		};
 
 		return (
 		<>
-			<div className="attachmentsPro--Content">
+			<div 
+				className="attachmentsPro--Content"
+			>
 				{attachments.map((attachment) => (
-					<div className="attachmentsPro--Item" key={attachment.path}>
+					<div 
+						className="attachmentsPro--Item" 
+						key={attachment.path}
+					>
 						<div 
 							className="attachmentsPro--ItemPreview"
 							onClick={() => {
-								setSelectedFile(app.vault.adapter.getResourcePath(attachment.path));
+								setSelectedFile(attachment);
 								setSelectedFileType(attachment.extension);
 							}}
 						>
@@ -310,19 +319,31 @@ export default function AttachmentView(): JSX.Element {
 		page: number;
 		setPage: React.Dispatch<React.SetStateAction<number>>;
 		totalPages: number;
-	}) => (
-		<div className="attachmentsPro--Pagination">
-			<button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-				Prev
-			</button>
-			<span>
-				{page} / {totalPages}
-			</span>
-			<button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
-				Next
-			</button>
-		</div>
-	);
+	}) => {
+
+		return (
+		<>
+			<div 
+				className="attachmentsPro--Pagination"
+			>
+				<button 
+					onClick={() => setPage((p) => Math.max(1, p - 1))} 
+					disabled={page === 1}
+				>
+					Prev
+				</button>
+				<span>
+					{page} / {totalPages}
+				</span>
+				<button 
+					onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+					disabled={page === totalPages}
+				>
+					Next
+				</button>
+			</div>
+		</>
+	);};
 
 	return (
 		<>
