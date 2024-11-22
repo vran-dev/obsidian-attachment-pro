@@ -60,6 +60,9 @@ const context = await esbuild.context({
 	outfile: "main.js",
 	minify: prod,
 	drop: prod ? ["console"] : [],
+	logOverride: {
+		"direct-eval": "silent"
+	}
 });
 
 if (prod) {

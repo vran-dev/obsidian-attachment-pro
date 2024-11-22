@@ -1,10 +1,11 @@
-import { App, TFile } from "obsidian";
+import { App, MarkdownView, TFile } from "obsidian";
 import { useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
-import { File } from "lucide-react";
+import { File, X } from "lucide-react";
 import Select, { MultiValue } from "react-select";
 import * as React from "react";
+import { getLocal } from '../../i18/messages';
 
 type Option = {
 	value: string;
@@ -17,7 +18,13 @@ class AttachmentFilter {
 	unused = false;
 }
 
-export default function AttachmentView(): JSX.Element {
+export default function AttachmentView({ 
+	canInsert = false ,
+	onClose
+}: { 
+	canInsert?: boolean,
+	onClose: () => void;
+}): JSX.Element {
 	const app = useObsidianApp();
 	const [attachments, setAttachments] = useState<TFile[]>();
 	const [page, setPage] = useState(1);
@@ -26,6 +33,7 @@ export default function AttachmentView(): JSX.Element {
 	const [onlyOrphan, setOnlyOrphan] = useState(filter.unused);
 	const [selectedFile, setSelectedFile] = useState<TFile>();
 	const [selectedFileType, setSelectedFileType] = useState<string>("");
+	const [selectedFiles, setSelectedFiles] = useState<TFile[]>([]);
 
 	const imageExtensions = [
 		"png",
@@ -45,10 +53,52 @@ export default function AttachmentView(): JSX.Element {
 		// "js",
 	];
 	const pageSizeOptions = [
-    { value: 10, label: "10" },
-    { value: 20, label: "20" },
-    { value: 50, label: "50" },
-  ];
+		{ value: 10, label: "10" },
+		{ value: 20, label: "20" },
+		{ value: 50, label: "50" },
+	];
+
+	const handleAttachmentSelect = (file: TFile) => {
+		setSelectedFiles(prev => {
+			const isSelected = prev.some(f => f.path === file.path);
+			if (isSelected) {
+				return prev.filter(f => f.path !== file.path);
+			} else {
+				return [...prev, file];
+			}
+		});
+	};
+	
+	const handleInsertAttachments = () => {
+		const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+		if (activeView && selectedFiles.length > 0) {
+			const editor = activeView.editor;
+			const cursor = editor.getCursor();
+			const links = Array.from(selectedFiles)
+				.map(attachment => {
+					const filePath = app.vault.adapter.getResourcePath(attachment.path);
+					const fileExt = attachment.extension;
+
+					if ([...imageExtensions, "components"].includes(fileExt)) {
+						return `![[${attachment.name}]]`;
+					}
+					if (fileExt === "pdf") {
+						return `![[${attachment.path}#page=1]]`;
+					}
+					if (fileExt === "html") {
+						return `<iframe 
+									src="${filePath.replace(/^app:\/\/[a-z0-9]+\/?/i, "")}" 
+									style="width: 100%; height: 600px; border: none;" 
+									sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals">
+								</iframe>`;
+					}
+					return `[[${attachment.path}]]`
+				})
+				.join('\n');
+			editor.replaceRange(links, cursor);
+			onClose();
+		}
+	};
 
 	const attachmentExtensions = useMemo(() => {
 		if (!attachments) {
@@ -134,67 +184,77 @@ export default function AttachmentView(): JSX.Element {
 
 		return (
 			<div className="attachmentsPro--Header">
-				<Select
-					isMulti
-					name="extensions"
-					className="basic-multi-select"
-					classNamePrefix="select"
-					// @ts-ignore
-					value={filter.extension.map((extension) => {return {value: extension, label: extension} as Option;})}
-					options={[allImageOption, ...attachmentExtensions.map((extension) => {
-						return {
-							value: extension,
-							label: extension,
-						} as Option;
-					})]}
-					onChange={(newValue: MultiValue<Option>) => {
-						setPage(1);
-						if (newValue.some(option => option.value === 'AllImages')) {
-							setFilter({
-								...filter,
-								extension: attachmentExtensions.filter(ext => imageExtensions.includes(ext)),
-							});
-						}else {
-							setFilter({
-								...filter,
-								extension: newValue.map((o) => o.value),
-							});
-						}
-					}}					
-				/>
-				<input
-					type="text"
-					value={filter.name}
-					onChange={(e) => {
-						setFilter(prevFilter => ({ ...prevFilter, name: e.target.value }))
-					}}
-					placeholder="Search by name"
-				/>
-				<Select
-					name="pageSize"
-					className="basic-single-select"
-					classNamePrefix="select"
-					defaultValue={pageSizeOptions.find((opt) => opt.value === pageSize)}
-					options={pageSizeOptions}
-					onChange={(selected) => {
-						if (selected) {
-							setPageSize(selected.value);
+				<div className="attachmentsPro--HeaderControls">
+					<Select
+						isMulti
+						name="extensions"
+						className="basic-multi-select"
+						classNamePrefix="select"
+						isSearchable={false}
+						// @ts-ignore
+						value={filter.extension.map((extension) => {return {value: extension, label: extension} as Option;})}
+						options={[allImageOption, ...attachmentExtensions.map((extension) => {
+							return {
+								value: extension,
+								label: extension,
+							} as Option;
+						})]}
+						onChange={(newValue: MultiValue<Option>) => {
 							setPage(1);
-						}
-					}}
-				/>
-				<label>
+							if (newValue.some(option => option.value === 'AllImages')) {
+								setFilter({
+									...filter,
+									extension: attachmentExtensions.filter(ext => imageExtensions.includes(ext)),
+								});
+							}else {
+								setFilter({
+									...filter,
+									extension: newValue.map((o) => o.value),
+								});
+							}
+						}}					
+					/>
 					<input
-						type="checkbox"
-						checked={onlyOrphan}
+						type="text"
+						value={filter.name}
 						onChange={(e) => {
-							setPage(1);
-							setFilter({ ...filter, unused: e.target.checked });
-							setOnlyOrphan(e.target.checked);
+							setFilter(prevFilter => ({ ...prevFilter, name: e.target.value }))
+						}}
+						placeholder="Search by name"
+					/>
+					<Select
+						name="pageSize"
+						className="basic-single-select"
+						classNamePrefix="select"
+						isSearchable={false}
+						defaultValue={pageSizeOptions.find((opt) => opt.value === pageSize)}
+						options={pageSizeOptions}
+						onChange={(selected) => {
+							if (selected) {
+								setPageSize(selected.value);
+								setPage(1);
+							}
 						}}
 					/>
-					Only Unused
-				</label>
+					<label>
+						<input
+							type="checkbox"
+							checked={onlyOrphan}
+							onChange={(e) => {
+								setPage(1);
+								setFilter({ ...filter, unused: e.target.checked });
+								setOnlyOrphan(e.target.checked);
+							}}
+						/>
+						Only Unused
+					</label>
+				</div>
+				<div 
+					className="attachmentsPro--CloseButton"
+					onClick={onClose}
+				>
+					<X />
+				</div>
 			</div>
 	);};
 
@@ -278,7 +338,7 @@ export default function AttachmentView(): JSX.Element {
 			>
 				{attachments.map((attachment) => (
 					<div 
-						className="attachmentsPro--Item" 
+						className={`attachmentsPro--Item ${canInsert && selectedFiles.some(f => f.path === attachment.path) ? 'selected' : ''}`}
 						key={attachment.path}
 					>
 						<div 
@@ -289,6 +349,17 @@ export default function AttachmentView(): JSX.Element {
 							}}
 						>
 							{renderPreview(attachment)}
+							{canInsert && (
+								<div 
+									className={`attachmentsPro--ItemCheckbox ${selectedFiles.some(f => f.path === attachment.path) ? 'selected' : ''}`}
+									onClick={(e) => {
+										e.stopPropagation();
+										handleAttachmentSelect(attachment);
+									}}
+								>
+									{selectedFiles.some(f => f.path === attachment.path) ? '✓' : ''}
+								</div>
+							)}
 						</div>
 						<div className="attachmentsPro--ItemName">
 							<a
@@ -320,30 +391,35 @@ export default function AttachmentView(): JSX.Element {
 		setPage: React.Dispatch<React.SetStateAction<number>>;
 		totalPages: number;
 	}) => {
-
 		return (
-		<>
-			<div 
-				className="attachmentsPro--Pagination"
-			>
-				<button 
-					onClick={() => setPage((p) => Math.max(1, p - 1))} 
-					disabled={page === 1}
-				>
-					Prev
-				</button>
-				<span>
-					{page} / {totalPages}
-				</span>
-				<button 
-					onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
-					disabled={page === totalPages}
-				>
-					Next
-				</button>
+			<div className="attachmentsPro--Pagination">
+				<div className="attachmentsPro--PaginationButtons">
+					<button 
+						onClick={() => setPage((p) => Math.max(1, p - 1))} 
+						disabled={page === 1}
+					>
+						Prev
+					</button>
+					<span>
+						{page} / {totalPages}
+					</span>
+					<button 
+						onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+						disabled={page === totalPages}
+					>
+						Next
+					</button>
+				</div>
+				{canInsert && selectedFiles.length > 0 && (
+					<div className="attachmentsPro--InsertButton">
+						<button onClick={handleInsertAttachments}>
+							{getLocal().INSERT_SELECTED_ATTACHMENTS} ({selectedFiles.length})
+						</button>
+					</div>
+				)}
 			</div>
-		</>
-	);};
+		);
+	};
 
 	return (
 		<>
@@ -357,13 +433,6 @@ export default function AttachmentView(): JSX.Element {
 					attachmentExtensions,
 					onlyOrphan,
 					setOnlyOrphan
-				})
-			}
-			{
-				Pagination({
-					page,
-					setPage,
-					totalPages: Math.ceil(filteredAttachments.length / pageSize)
 				})
 			}
 			{

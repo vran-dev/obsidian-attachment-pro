@@ -12,12 +12,12 @@ export class AttachmentsModal extends Modal {
 
 	plugin: Plugin;
 
-	showAll: boolean;
+	canInsert: boolean;
 
-	constructor(app: App, plugin: Plugin, showAll?: boolean) {
+	constructor(app: App, plugin: Plugin, canInsert: boolean) {
 		super(app);
 		this.plugin = plugin;
-		this.showAll = showAll == true;
+		this.canInsert = canInsert;
 	}
 
 	async onOpen(): Promise<void> {
@@ -34,7 +34,10 @@ export class AttachmentsModal extends Modal {
 							</div>
 						}
 					>
-						<LazyAttachmentView />
+						<LazyAttachmentView 
+							canInsert={this.canInsert} 
+							onClose={() => this.close()}
+						/>
 					</Suspense>
 				</ObsidianAppContext.Provider>
 			</StrictMode>

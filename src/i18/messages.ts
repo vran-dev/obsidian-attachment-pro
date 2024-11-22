@@ -50,6 +50,9 @@ export interface Message {
 	// operator
 	OPERATOR_CONTAINS_ALL: string;
 	OPERATOR_CONTAINS_ANY: string;
+
+	context_menu_insert: string;
+	INSERT_SELECTED_ATTACHMENTS: string;
 }
 
 export function getLocal(): Message {

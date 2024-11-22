@@ -49,4 +49,7 @@ export default class EnLocalMessage implements Message {
 
 	OPERATOR_CONTAINS_ALL = "Contains All";
 	OPERATOR_CONTAINS_ANY = "Contains Any";
+
+	context_menu_insert = "Insert from attachment";
+	INSERT_SELECTED_ATTACHMENTS = "Insert Selected Attachments";
 }
