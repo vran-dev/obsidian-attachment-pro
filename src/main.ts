@@ -7,7 +7,9 @@ import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
 import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
 import '../style/styles.css'
 import '../style/suggest.css'
+import '../style/modal.css'
 import { AttachmentsModal } from "./ui/obsidian-modal/AttachmentsModal";
+import { getLocal } from "./i18/messages";
 
 declare module "obsidian" {
 	interface CanvasView extends TextFileView {
@@ -27,6 +29,7 @@ export default class AttachmentProPlugin extends Plugin {
 			// TODO
 			// this.registerCanvasPasteOrDropHandler();
 			this.registerCommands();
+			this.registerContextMenu();
 			this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
 		} catch (e) {
 			new Notice('error when load plugin "Attachment Pro"' + e.message);
@@ -89,12 +92,30 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	registerCommands() {
-		// this.addCommand({
-		// 	id: "show-attachments",
-		// 	name: "show Attachments", 
-		// 	callback: () => {
-		// 		new AttachmentsModal(this.app, this).open();
-		// 	},
-		// });
+		this.addCommand({
+			id: "show-attachments",
+			name: "Show Attachments", 
+			callback: () => {
+				new AttachmentsModal(this.app, this, false).open();
+			},
+		});
+		this.addRibbonIcon('layers-3', 'Show Attachments', () => {
+			new AttachmentsModal(this.app, this, false).open();
+		});
+	}
+
+	registerContextMenu() {
+		this.registerEvent(
+			this.app.workspace.on("editor-menu", (menu, editor) => {
+				menu.addItem((item) => {
+					item
+						.setTitle(getLocal().context_menu_insert)
+						.setIcon("layers-3")
+						.onClick(() => {
+							new AttachmentsModal(this.app, this, true).open();
+						});
+				});
+			})
+		);
 	}
 }

@@ -1,9 +1,16 @@
-import { TFile } from "obsidian";
+import { App, MarkdownView, TFile } from "obsidian";
 import { useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
-import { File } from "lucide-react";
+import { File, X } from "lucide-react";
 import Select, { MultiValue } from "react-select";
+import * as React from "react";
+import { getLocal } from '../../i18/messages';
+
+type Option = {
+	value: string;
+	label: string;
+};
 
 class AttachmentFilter {
 	name = "";
@@ -11,23 +18,87 @@ class AttachmentFilter {
 	unused = false;
 }
 
-export default function AttachmentView(): JSX.Element {
+export default function AttachmentView({ 
+	canInsert = false ,
+	onClose
+}: { 
+	canInsert?: boolean,
+	onClose: () => void;
+}): JSX.Element {
 	const app = useObsidianApp();
 	const [attachments, setAttachments] = useState<TFile[]>();
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const [filter, setFilter] = useState(new AttachmentFilter());
-	const [onlyOrphan, setOnlyOrphan] = useState(false);
+	const [onlyOrphan, setOnlyOrphan] = useState(filter.unused);
+	const [selectedFile, setSelectedFile] = useState<TFile>();
+	const [selectedFileType, setSelectedFileType] = useState<string>("");
+	const [selectedFiles, setSelectedFiles] = useState<TFile[]>([]);
 
-	const supportPreviewExtensions = [
+	const imageExtensions = [
 		"png",
 		"jpg",
 		"jpeg",
 		"gif",
 		"svg",
 		"webp",
-		"canvas",
+		"bmp"
 	];
+	const supportPreviewExtensions = [...imageExtensions, 
+		// "md",
+		// "canvas",
+		// "components",
+		// "html",
+		// "json",
+		// "js",
+	];
+	const pageSizeOptions = [
+		{ value: 10, label: "10" },
+		{ value: 20, label: "20" },
+		{ value: 50, label: "50" },
+	];
+
+	const handleAttachmentSelect = (file: TFile) => {
+		setSelectedFiles(prev => {
+			const isSelected = prev.some(f => f.path === file.path);
+			if (isSelected) {
+				return prev.filter(f => f.path !== file.path);
+			} else {
+				return [...prev, file];
+			}
+		});
+	};
+	
+	const handleInsertAttachments = () => {
+		const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+		if (activeView && selectedFiles.length > 0) {
+			const editor = activeView.editor;
+			const cursor = editor.getCursor();
+			const links = Array.from(selectedFiles)
+				.map(attachment => {
+					const filePath = app.vault.adapter.getResourcePath(attachment.path);
+					const fileExt = attachment.extension;
+
+					if ([...imageExtensions, "components"].includes(fileExt)) {
+						return `![[${attachment.name}]]`;
+					}
+					if (fileExt === "pdf") {
+						return `![[${attachment.path}#page=1]]`;
+					}
+					if (fileExt === "html") {
+						return `<iframe 
+									src="${filePath.replace(/^app:\/\/[a-z0-9]+\/?/i, "")}" 
+									style="width: 100%; height: 600px; border: none;" 
+									sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals">
+								</iframe>`;
+					}
+					return `[[${attachment.path}]]`
+				})
+				.join('\n');
+			editor.replaceRange(links, cursor);
+			onClose();
+		}
+	};
 
 	const attachmentExtensions = useMemo(() => {
 		if (!attachments) {
@@ -36,24 +107,39 @@ export default function AttachmentView(): JSX.Element {
 		const distinct = new Set(
 			attachments?.map((attachment) => attachment.extension)
 		);
-		return Array.from(distinct);
+		return Array.from(distinct).sort();
 	}, [attachments]);
 
-	const listAttachments = async () => {
-		const attachmentHandler = new AttachmentHandler();
-		const attachments = await attachmentHandler.listAttachments(app);
-		setAttachments(attachments);
-		return [];
-	};
+	const listAttachments = useMemo(() => {
+		return async () => {
+			const attachmentHandler = new AttachmentHandler();
+			const attachments = await attachmentHandler.listAttachments(app);
+			setAttachments(attachments);
+		};
+	}, [app]);
+	
+	const listUnusedAttachments = useMemo(() => {
+		return async () => {
+			const attachmentHandler = new AttachmentHandler();
+			const attachments = await attachmentHandler.listUnusedAttachments(app);
+			setAttachments(attachments);
+		};
+	}, [app]);
+	
 
 	useEffect(() => {
-		listAttachments();
-	}, []);
+		if (onlyOrphan) {
+      listUnusedAttachments();
+    } else {
+      listAttachments();
+    }
+	}, [onlyOrphan]);
 
 	const filteredAttachments = useMemo(() => {
 		if (!attachments) {
 			return [];
 		}
+		console.log(filter);
 		return attachments
 			.filter((attachment) => {
 				if (filter.name !== "") {
@@ -64,139 +150,313 @@ export default function AttachmentView(): JSX.Element {
 				return true;
 			})
 			.filter((attachment) => {
-				if (filter.extension.length > 0) {
+				if (filter.extension.length >= 1) {
 					return filter.extension.includes(attachment.extension);
 				}
 				return true;
 			});
-	}, [filter, attachments, onlyOrphan]);
+	}, [filter, attachments]);
 
-	return (
-		<>
-			<div className="attachment-view-container">
-				<div className="header">
+	const paginatedAttachments = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return filteredAttachments.slice(start, end);
+  }, [filteredAttachments, page, pageSize]);
+
+	const Header = ({
+		filter,
+		setFilter,
+		pageSize,
+		setPageSize,
+		attachmentExtensions,
+		onlyOrphan,
+		setOnlyOrphan,
+	}: {
+		filter: AttachmentFilter;
+		setFilter: React.Dispatch<React.SetStateAction<AttachmentFilter>>;
+		pageSize: number;
+		setPageSize: React.Dispatch<React.SetStateAction<number>>;
+		attachmentExtensions: string[];
+		onlyOrphan: boolean;
+		setOnlyOrphan: React.Dispatch<React.SetStateAction<boolean>>;
+	}) => {
+		const allImageOption = { value: 'AllImages', label: 'Images(All)' };
+
+		return (
+			<div className="attachmentsPro--Header">
+				<div className="attachmentsPro--HeaderControls">
 					<Select
 						isMulti
 						name="extensions"
 						className="basic-multi-select"
 						classNamePrefix="select"
+						isSearchable={false}
 						// @ts-ignore
-						options={attachmentExtensions.map((extension) => {
+						value={filter.extension.map((extension) => {return {value: extension, label: extension} as Option;})}
+						options={[allImageOption, ...attachmentExtensions.map((extension) => {
 							return {
 								value: extension,
 								label: extension,
 							} as Option;
-						})}
+						})]}
 						onChange={(newValue: MultiValue<Option>) => {
 							setPage(1);
-							setFilter({
-								...filter,
-								extension: newValue.map((o) => o.value),
-							});
-						}}
-					></Select>
-
+							if (newValue.some(option => option.value === 'AllImages')) {
+								setFilter({
+									...filter,
+									extension: attachmentExtensions.filter(ext => imageExtensions.includes(ext)),
+								});
+							}else {
+								setFilter({
+									...filter,
+									extension: newValue.map((o) => o.value),
+								});
+							}
+						}}					
+					/>
 					<input
 						type="text"
-						defaultValue={filter.name}
+						value={filter.name}
 						onChange={(e) => {
-							setFilter({ ...filter, name: e.target.value });
+							setFilter(prevFilter => ({ ...prevFilter, name: e.target.value }))
 						}}
+						placeholder="Search by name"
 					/>
-				</div>
-				<div className="header">
-					<button
-						onClick={() => {
-							if (page > 1) {
-								setPage(page - 1);
+					<Select
+						name="pageSize"
+						className="basic-single-select"
+						classNamePrefix="select"
+						isSearchable={false}
+						defaultValue={pageSizeOptions.find((opt) => opt.value === pageSize)}
+						options={pageSizeOptions}
+						onChange={(selected) => {
+							if (selected) {
+								setPageSize(selected.value);
+								setPage(1);
 							}
 						}}
+					/>
+					<label>
+						<input
+							type="checkbox"
+							checked={onlyOrphan}
+							onChange={(e) => {
+								setPage(1);
+								setFilter({ ...filter, unused: e.target.checked });
+								setOnlyOrphan(e.target.checked);
+							}}
+						/>
+						Only Unused
+					</label>
+				</div>
+				<div 
+					className="attachmentsPro--CloseButton"
+					onClick={onClose}
+				>
+					<X />
+				</div>
+			</div>
+	);};
+
+	const Modal = ({
+		selectedFile,
+		selectedFileType,
+		setSelectedFile,
+	}: {
+		selectedFile: TFile;
+		selectedFileType: string;
+		setSelectedFile: React.Dispatch<React.SetStateAction<TFile | undefined>>;
+	}) => {
+		if (!selectedFile) return null;
+
+		const renderPreview = (selectedFile: TFile, selectedFileType: string) => {
+			if ( supportPreviewExtensions.includes(selectedFileType)) {
+				const filePath = app.vault.adapter.getResourcePath(selectedFile.path);
+
+				if (imageExtensions.includes(selectedFileType)) {
+					return (
+						<img
+							draggable={true}
+							src={filePath}
+							alt={selectedFile.name}
+						/>
+					);
+				}
+			}
+			else {
+				return (
+					<div>can't preview this file type</div>
+				)
+			}
+		};
+
+		return (
+			<div 
+				className="attachmentsPro--ItemModal" 
+				onClick={() => setSelectedFile(undefined)}
+			>
+				<div 
+					className="attachmentsPro--ItemModalContent" 
+					// onClick={(e) => e.stopPropagation()}
+				>
+					{renderPreview(selectedFile, selectedFileType)}
+				</div>
+			</div>
+		);
+	};
+	
+	const Content = ({
+		attachments,
+		supportPreviewExtensions,
+		app,
+	}: {
+		attachments: TFile[];
+		supportPreviewExtensions: string[];
+		app: App;
+	}) => {
+		const renderPreview = (attachment: TFile) => {
+			if (supportPreviewExtensions.includes(attachment.extension)){
+				const filePath = app.vault.adapter.getResourcePath(attachment.path);
+
+				if (imageExtensions.includes(attachment.extension)) {
+					return (
+						<img
+							draggable={true}
+							src={filePath}
+							alt={attachment.name}
+						/>
+					);
+				}
+			}
+			return <File />;
+		};
+
+		return (
+		<>
+			<div 
+				className="attachmentsPro--Content"
+			>
+				{attachments.map((attachment) => (
+					<div 
+						className={`attachmentsPro--Item ${canInsert && selectedFiles.some(f => f.path === attachment.path) ? 'selected' : ''}`}
+						key={attachment.path}
+					>
+						<div 
+							className="attachmentsPro--ItemPreview"
+							onClick={() => {
+								setSelectedFile(attachment);
+								setSelectedFileType(attachment.extension);
+							}}
+						>
+							{renderPreview(attachment)}
+							{canInsert && (
+								<div 
+									className={`attachmentsPro--ItemCheckbox ${selectedFiles.some(f => f.path === attachment.path) ? 'selected' : ''}`}
+									onClick={(e) => {
+										e.stopPropagation();
+										handleAttachmentSelect(attachment);
+									}}
+								>
+									{selectedFiles.some(f => f.path === attachment.path) ? '✓' : ''}
+								</div>
+							)}
+						</div>
+						<div className="attachmentsPro--ItemName">
+							<a
+								className="internal-link"
+								href={attachment.path}
+								aria-label={attachment.path}
+								target="_blank"
+								rel="noopener"
+								onClick={(e) => {
+									e.preventDefault();
+									app.workspace.openLinkText(attachment.name, attachment.path, true, { active: true });
+								}}
+							>
+								{attachment.name}
+							</a>
+						</div>
+					</div>
+				))}
+			</div>
+		</>
+	);};
+	
+	const Pagination = ({
+		page,
+		setPage,
+		totalPages,
+	}: {
+		page: number;
+		setPage: React.Dispatch<React.SetStateAction<number>>;
+		totalPages: number;
+	}) => {
+		return (
+			<div className="attachmentsPro--Pagination">
+				<div className="attachmentsPro--PaginationButtons">
+					<button 
+						onClick={() => setPage((p) => Math.max(1, p - 1))} 
+						disabled={page === 1}
 					>
 						Prev
 					</button>
 					<span>
-						{page}/{" "}
-						{Math.ceil(filteredAttachments.length / pageSize)}
+						{page} / {totalPages}
 					</span>
-					<button
-						onClick={() => {
-							if (
-								page <
-								Math.ceil(filteredAttachments.length / pageSize)
-							) {
-								setPage(page + 1);
-							}
-						}}
+					<button 
+						onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+						disabled={page === totalPages}
 					>
 						Next
 					</button>
 				</div>
-
-				<div className="content">
-					{filteredAttachments
-						?.slice(
-							(page - 1) * pageSize,
-							(page - 1) * pageSize + pageSize
-						)
-						.map((attachment) => {
-							return (
-								<div
-									className="attachment-item"
-									key={attachment.path}
-								>
-									{supportPreviewExtensions.includes(
-										attachment.extension
-									) ? (
-										<div className="item-preview">
-											<img
-												draggable={true}
-												src={app.vault.adapter.getResourcePath(
-													attachment.path
-												)}
-												alt={attachment.name}
-											/>
-										</div>
-									) : (
-										<div className="item-preview">
-											<File />
-										</div>
-									)}
-
-									{/* <div className="item-name">
-										{attachment.name}
-									</div> */}
-									<div className="item-path">
-										{attachment.path}
-									</div>
-								</div>
-							);
-						})}
-				</div>
-				<div className="footer"></div>
+				{canInsert && selectedFiles.length > 0 && (
+					<div className="attachmentsPro--InsertButton">
+						<button onClick={handleInsertAttachments}>
+							{getLocal().INSERT_SELECTED_ATTACHMENTS} ({selectedFiles.length})
+						</button>
+					</div>
+				)}
 			</div>
+		);
+	};
+
+	return (
+		<>
+		<div className="attachmentsPro--ViewContainer">
+			{
+				Header({
+					filter,
+					setFilter,
+					pageSize,
+					setPageSize,
+					attachmentExtensions,
+					onlyOrphan,
+					setOnlyOrphan
+				})
+			}
+			{
+				Content({
+					attachments: paginatedAttachments,
+					supportPreviewExtensions,
+					app
+				})
+			}
+			{selectedFile && (
+				Modal({
+					selectedFile,
+					selectedFileType,
+					setSelectedFile,
+				})
+			)}
+			{
+				Pagination({
+					page,
+					setPage,
+					totalPages: Math.ceil(filteredAttachments.length / pageSize)
+				})
+			}
+		</div>
 		</>
 	);
 }
-
-const pageSizeOptions = [
-	{
-		id: 1,
-		label: "10",
-		value: 10,
-	},
-	{
-		id: 2,
-		label: "20",
-		value: 20,
-	},
-	{
-		id: 3,
-		label: "50",
-		value: 50,
-	},
-];
-
-type Option = {
-	value: string;
-	label: string;
-};

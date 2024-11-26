@@ -49,4 +49,7 @@ export default class ZhLocalMessage implements Message {
 
 	OPERATOR_CONTAINS_ALL = "包含以下全部";
 	OPERATOR_CONTAINS_ANY = "包含任意一个";
+
+	context_menu_insert = "从附件库中插入";
+	INSERT_SELECTED_ATTACHMENTS = "插入选中的附件";
 }
