@@ -198,24 +198,6 @@
   background-color: var(--background-modifier-hover);
 }
 
-.attachmentsPro--Item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.attachmentsPro--Item:hover::before {
-  opacity: 1;
-}
-
 .attachmentsPro--ItemPreview {
   width: clamp(90px, 18vw, 120px);
   height: clamp(90px, 18vw, 120px);
@@ -459,10 +441,6 @@
 }
 
 /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
-.attachmentsPro--ViewContainer:focus-within {
-  outline: 2px solid var(--interactive-accent);
-  outline-offset: 2px;
-}
 
 .attachmentsPro--Item:focus {
   outline: 2px solid var(--interactive-accent);
@@ -633,25 +611,6 @@
     padding: 12px;
     min-height: 70px;
   }
-}
-
-/* ===== ADVANCED HOVER EFFECTS ===== */
-.attachmentsPro--Item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.attachmentsPro--Item:hover::before {
-  opacity: 1;
 }
 
 /* ===== GRID LAYOUT IMPROVEMENTS ===== */
