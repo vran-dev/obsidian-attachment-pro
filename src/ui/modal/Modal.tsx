@@ -111,14 +111,33 @@ export default function Modal({
 	title,
 	closeOnClickOutside = false,
 	modalContentSize,
+	container,
 }: {
 	children: ReactNode;
 	closeOnClickOutside?: boolean;
 	onClose: () => void;
 	title: string;
 	modalContentSize?: "auto" | "max";
+	container?: HTMLElement;
 }): JSX.Element {
-	return createPortal(
+	// 如果提供了容器，使用 createPortal 渲染到该容器
+	// 否则直接返回组件（不使用 Portal）
+	if (container) {
+		return createPortal(
+			<PortalImpl
+				onClose={onClose}
+				title={title}
+				closeOnClickOutside={closeOnClickOutside}
+				modalContentSize={modalContentSize ? modalContentSize : "auto"}
+			>
+				{children}
+			</PortalImpl>,
+			container
+		);
+	}
+
+	// 不使用 Portal，直接渲染组件
+	return (
 		<PortalImpl
 			onClose={onClose}
 			title={title}
@@ -126,7 +145,6 @@ export default function Modal({
 			modalContentSize={modalContentSize ? modalContentSize : "auto"}
 		>
 			{children}
-		</PortalImpl>,
-		document.body
+		</PortalImpl>
 	);
 }
