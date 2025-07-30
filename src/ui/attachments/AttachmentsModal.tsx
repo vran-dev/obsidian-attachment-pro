@@ -1,9 +1,10 @@
-import { App, Modal, Plugin } from "obsidian";
+import { App, Modal as ObsidianModal, Plugin } from "obsidian";
 import { StrictMode, Suspense, lazy } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ObsidianAppContext } from "src/context/obsidianAppContext";
+import Modal from "../modal/Modal";
 
-export class AttachmentsModal extends Modal {
+export class AttachmentsModal extends ObsidianModal {
 	root: Root | null = null;
 
 	onSave?: (content: string) => void;
@@ -21,24 +22,31 @@ export class AttachmentsModal extends Modal {
 	}
 
 	async onOpen(): Promise<void> {
-		const el = this.containerEl;
+		const el = this.modalEl;
+		el.empty();
 		this.root = createRoot(el);
 		const LazyAttachmentView = lazy(() => import("./AttachmentView"));
 		this.root.render(
 			<StrictMode>
 				<ObsidianAppContext.Provider value={this.app}>
-					<Suspense
-						fallback={
-							<div>
-								<h1>loading</h1>
-							</div>
-						}
-					>
-						<LazyAttachmentView 
-							canInsert={this.canInsert} 
-							onClose={() => this.close()}
-						/>
-					</Suspense>
+					<Modal
+						onClose={() => this.close()}
+						title="Attachments"
+						closeOnClickOutside={true}
+						modalContentSize="max">
+						<Suspense
+							fallback={
+								<div>
+									<h1>loading</h1>
+								</div>
+							}
+						>
+							<LazyAttachmentView 
+								canInsert={this.canInsert} 
+								onClose={() => this.close()}
+							/>
+						</Suspense>
+					</Modal>
 				</ObsidianAppContext.Provider>
 			</StrictMode>
 		);
@@ -47,6 +55,5 @@ export class AttachmentsModal extends Modal {
 	async onClose() {
 		this.root?.unmount();
 		this.root = null;
-		this.containerEl.empty();
 	}
 }
