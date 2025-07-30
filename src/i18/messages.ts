@@ -51,7 +51,8 @@ export interface Message {
 	OPERATOR_CONTAINS_ALL: string;
 	OPERATOR_CONTAINS_ANY: string;
 
-	context_menu_insert: string;
+	SHOW_ATTACHMENTS: string;
+	CONTEXT_MENU_INSERT_ATTACHMENTS: string;
 	INSERT_SELECTED_ATTACHMENTS: string;
 }
 
