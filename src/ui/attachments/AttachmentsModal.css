@@ -14,6 +14,11 @@
   --attachments-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+.attachmentsPro--modal {
+  width: 100%;
+  height: 100%;
+}
+
 /* ===== MAIN CONTAINER ===== */
 .attachmentsPro--ViewContainer {
   display: flex;
@@ -499,9 +504,6 @@
 
 @media screen and (max-width: 768px) {
   .attachmentsPro--ViewContainer {
-    width: 95vw;
-    height: 90vh;
-    max-height: 90vh;
     border-radius: 12px;
     margin: 0;
   }
@@ -589,9 +591,6 @@
 
 @media screen and (max-width: 480px) {
   .attachmentsPro--ViewContainer {
-    width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
     border-radius: 0;
     border: none;
   }
