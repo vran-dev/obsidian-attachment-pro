@@ -21,7 +21,8 @@ export class AttachmentsModal extends Modal {
 	}
 
 	async onOpen(): Promise<void> {
-		const el = this.containerEl;
+		const el = this.contentEl;
+		this.modalEl.addClass("attachmentsPro--modal");
 		this.root = createRoot(el);
 		const LazyAttachmentView = lazy(() => import("./AttachmentView"));
 		this.root.render(
@@ -47,6 +48,5 @@ export class AttachmentsModal extends Modal {
 	async onClose() {
 		this.root?.unmount();
 		this.root = null;
-		this.containerEl.empty();
 	}
 }

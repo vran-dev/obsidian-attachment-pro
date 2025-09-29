@@ -2,10 +2,12 @@ import { App, MarkdownView, TFile } from "obsidian";
 import { useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
-import { File, X } from "lucide-react";
+import { File } from "lucide-react";
 import Select, { MultiValue } from "react-select";
 import * as React from "react";
 import { getLocal } from '../../i18/messages';
+import Modal from "../modal/Modal";
+import "./AttachmentsModal.css"
 
 type Option = {
 	value: string;
@@ -249,16 +251,10 @@ export default function AttachmentView({
 						Only Unused
 					</label>
 				</div>
-				<div 
-					className="attachmentsPro--CloseButton"
-					onClick={onClose}
-				>
-					<X />
-				</div>
 			</div>
 	);};
 
-	const Modal = ({
+	const PreviewModal = ({
 		selectedFile,
 		selectedFileType,
 		setSelectedFile,
@@ -291,17 +287,19 @@ export default function AttachmentView({
 		};
 
 		return (
-			<div 
-				className="attachmentsPro--ItemModal" 
-				onClick={() => setSelectedFile(undefined)}
+
+			<Modal
+				title={selectedFile.name}
+				onClose={() => setSelectedFile(undefined)}
+				closeOnClickOutside={false}
 			>
 				<div 
-					className="attachmentsPro--ItemModalContent" 
-					// onClick={(e) => e.stopPropagation()}
+					className="attachmentsPro--ItemModal" 
+					onClick={() => setSelectedFile(undefined)}
 				>
 					{renderPreview(selectedFile, selectedFileType)}
 				</div>
-			</div>
+			</Modal>
 		);
 	};
 	
@@ -443,11 +441,11 @@ export default function AttachmentView({
 				})
 			}
 			{selectedFile && (
-				Modal({
-					selectedFile,
-					selectedFileType,
-					setSelectedFile,
-				})
+				<PreviewModal
+					selectedFile={selectedFile}
+					selectedFileType={selectedFileType}
+					setSelectedFile={setSelectedFile}
+				/>
 			)}
 			{
 				Pagination({

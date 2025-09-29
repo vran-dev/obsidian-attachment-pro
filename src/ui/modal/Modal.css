@@ -20,23 +20,27 @@
   height: 100%;
   padding: 2rem;
 }
+
 .Modal__modal {
   padding: 20px;
   min-height: 100px;
   min-width: 300px;
   display: flex;
-  background-color: #fff;
+  background-color: var(--background-primary);
   flex-direction: column;
   position: relative;
-  box-shadow: 0 0 20px 0 #444;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.3);
   border-radius: 10px;
+  border: 1px solid var(--background-modifier-border);
 }
+
 .Modal__title {
-  color: #444;
+  color: var(--text-normal);
   margin: 0px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--background-modifier-border);
 }
+
 .Modal__closeButton {
   border: 0px;
   position: absolute;
@@ -49,11 +53,13 @@
   height: 30px;
   text-align: center;
   cursor: pointer;
-  background-color: #eee;
+  background-color: var(--background-secondary);
 }
+
 .Modal__closeButton:hover {
-  background-color: #ddd;
+  background-color: var(--background-modifier-hover);
 }
+
 .Modal__content {
   padding-top: 20px;
   overflow: scroll;

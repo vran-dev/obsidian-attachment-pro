@@ -1,0 +1,656 @@
+/* ===== BASE VARIABLES AND THEME COMPATIBILITY ===== */
+:root {
+  --attachments-border-radius: 8px;
+  --attachments-gap: 12px;
+  --attachments-padding: 16px;
+  --attachments-transition: all 0.2s ease;
+  --attachments-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --attachments-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Ensure theme compatibility */
+.theme-dark {
+  --attachments-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --attachments-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.attachmentsPro--modal {
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.attachmentsPro--ViewContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--attachments-border-radius);
+  overflow: hidden;
+}
+
+.attachmentsPro--Header {
+  flex-shrink: 0;
+  display: flex;
+  gap: clamp(8px, 1.5vw, 12px);
+  padding: clamp(12px, 2vw, 16px);
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  min-height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.attachmentsPro--HeaderControls {
+  display: flex;
+  gap: clamp(8px, 1.5vw, 12px);
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.attachmentsPro--HeaderControls .basic-multi-select {
+  min-width: 150px;
+  flex: 2;
+  max-width: 350px;
+}
+
+.attachmentsPro--HeaderControls input[type="text"] {
+  min-width: 120px;
+  flex: 3;
+  max-width: 450px;
+  padding: 8px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.attachmentsPro--HeaderControls input[type="text"]:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+}
+
+.attachmentsPro--HeaderControls .basic-single-select {
+  min-width: 80px;
+  flex: 1;
+  max-width: 150px;
+}
+
+.attachmentsPro--HeaderControls label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.attachmentsPro--HeaderControls label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.attachmentsPro--HeaderControls .basic-multi-select .select__control,
+.attachmentsPro--HeaderControls .basic-single-select .select__control {
+  background-color: var(--background-primary);
+  border-color: var(--background-modifier-border);
+}
+
+.attachmentsPro--HeaderControls .select__menu {
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.attachmentsPro--HeaderControls .select__option {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.attachmentsPro--HeaderControls .select__option--is-focused {
+  background-color: var(--background-modifier-hover);
+}
+
+.attachmentsPro--HeaderControls .select__option--is-selected {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.attachmentsPro--HeaderControls .select__single-value,
+.attachmentsPro--HeaderControls .select__multi-value,
+.attachmentsPro--HeaderControls .select__input-container {
+  color: var(--text-normal);
+}
+
+.attachmentsPro--HeaderControls .select__multi-value {
+  background-color: var(--background-modifier-hover);
+}
+
+.attachmentsPro--HeaderControls .select__multi-value__label {
+  color: var(--text-normal);
+}
+
+.attachmentsPro--HeaderControls .select__multi-value__remove {
+  color: var(--text-muted);
+}
+
+.attachmentsPro--HeaderControls .select__multi-value__remove:hover {
+  background-color: var(--background-modifier-error);
+  color: var(--text-on-accent);
+}
+
+.attachmentsPro--HeaderControls .select__clear-indicator,
+.attachmentsPro--HeaderControls .select__dropdown-indicator {
+  color: var(--text-muted);
+}
+
+.attachmentsPro--HeaderControls .select__clear-indicator:hover,
+.attachmentsPro--HeaderControls .select__dropdown-indicator:hover {
+  color: var(--text-normal);
+}
+
+.attachmentsPro--Content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: clamp(12px, 2vw, 20px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  gap: clamp(12px, 2.5vw, 20px);
+  align-content: start;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-bg);
+}
+
+.attachmentsPro--Item {
+  background-color: var(--background-secondary);
+  padding: clamp(12px, 2.5vw, 18px);
+  border-radius: 10px;
+  box-shadow: var(--attachments-shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition: var(--attachments-transition);
+  border: 2px solid transparent;
+}
+
+.attachmentsPro--Item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--attachments-shadow-hover);
+  border-color: var(--background-modifier-border-hover);
+}
+
+.attachmentsPro--Item.selected {
+  border: 2px solid var(--interactive-accent);
+  background-color: var(--background-modifier-hover);
+}
+
+.attachmentsPro--ItemPreview {
+  width: clamp(90px, 18vw, 120px);
+  height: clamp(90px, 18vw, 120px);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--background-primary);
+}
+
+.attachmentsPro--ItemPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.attachmentsPro--ItemPreview:hover img {
+  transform: scale(1.05);
+}
+
+.attachmentsPro--ItemSelected {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachmentsPro--ItemName {
+  word-wrap: break-word;
+  word-break: break-all;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+  margin-top: 4px;
+}
+
+.attachmentsPro--ItemName .internal-link {
+  color: var(--text-normal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.attachmentsPro--ItemName .internal-link:hover {
+  color: var(--interactive-accent);
+}
+
+.attachmentsPro--ItemModal {
+  max-width: 90vw;
+  max-height: 90vh;
+  /* width: 90vw;
+  height: 90vh;
+  background: var(--background-primary);
+  padding: 20px; */
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.attachmentsPro--ItemModal img {
+  object-fit: contain;
+  border-radius: 5px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.attachmentsPro--Pagination {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(12px, 2vw, 16px);
+  background-color: var(--background-primary);
+  border-top: 1px solid var(--background-modifier-border);
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 70px;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.attachmentsPro--PaginationButtons {
+  display: flex;
+  gap: clamp(8px, 1.5vw, 12px);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.attachmentsPro--Pagination button {
+  background-color: var(--background-secondary);
+  color: var(--text-normal);
+  padding: clamp(8px, 1.2vw, 10px) clamp(12px, 2vw, 18px);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachmentsPro--Pagination button:hover:not(:disabled) {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+  transform: translateY(-1px);
+}
+
+.attachmentsPro--Pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.attachmentsPro--Pagination span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-normal);
+  min-width: 60px;
+  text-align: center;
+}
+
+.attachmentsPro--InsertButton {
+  display: flex;
+  align-items: center;
+}
+
+.attachmentsPro--InsertButton button {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  padding: clamp(8px, 1.2vw, 10px) clamp(16px, 2.5vw, 20px);
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  min-width: 50px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: clamp(13px, 1.2vw, 15px);
+  transition: all 0.2s ease;
+}
+
+.attachmentsPro--InsertButton button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.attachmentsPro--ItemCheckbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 2px solid var(--text-muted);
+  background-color: var(--background-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-on-accent);
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attachmentsPro--ItemCheckbox:hover {
+  border-color: var(--interactive-accent);
+  transform: scale(1.1);
+}
+
+.attachmentsPro--ItemCheckbox.selected {
+  background-color: var(--interactive-accent);
+  border-color: var(--interactive-accent);
+  transform: scale(1.1);
+}
+
+.basic-multi-select {
+  min-width: 200px;
+}
+
+.basic-single-select {
+  min-width: 100px;
+}
+
+/* ===== LOADING AND EMPTY STATES ===== */
+.attachmentsPro--LoadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.attachmentsPro--EmptyState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.attachmentsPro--EmptyState h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-normal);
+  font-size: 18px;
+}
+
+.attachmentsPro--EmptyState p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+
+.attachmentsPro--Item:focus {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .attachmentsPro--Item,
+  .attachmentsPro--ItemPreview img,
+  .attachmentsPro--ItemCheckbox,
+  .attachmentsPro--Pagination button,
+  .attachmentsPro--InsertButton button {
+    transition: none;
+  }
+  
+  .attachmentsPro--Item:hover {
+    transform: none;
+  }
+  
+  .attachmentsPro--ItemPreview:hover img {
+    transform: none;
+  }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+.attachmentsPro--Content {
+  contain: layout style paint;
+  will-change: scroll-position;
+}
+
+.attachmentsPro--ItemPreview img {
+  will-change: transform;
+}
+
+/* ===== TOOLTIP STYLES ===== */
+.attachmentsPro--Tooltip {
+  position: absolute;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-normal);
+  box-shadow: var(--attachments-shadow);
+  z-index: 1001;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.attachmentsPro--Tooltip.visible {
+  opacity: 1;
+}
+
+@media screen and (max-width: 768px) {
+  .attachmentsPro--ViewContainer {
+    border-radius: 12px;
+    margin: 0;
+  }
+  
+  .attachmentsPro--Header {
+    padding: 16px;
+    min-height: 70px;
+  }
+  
+  .attachmentsPro--HeaderControls {
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .attachmentsPro--HeaderControls .basic-multi-select,
+  .attachmentsPro--HeaderControls input[type="text"],
+  .attachmentsPro--HeaderControls .basic-single-select {
+    flex: 1 1 100%;
+    max-width: none;
+    min-width: 100%;
+  }
+
+  .attachmentsPro--HeaderControls label {
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .attachmentsPro--Content {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .attachmentsPro--ItemPreview {
+    width: clamp(80px, 20vw, 100px);
+    height: clamp(80px, 20vw, 100px);
+  }
+
+  .attachmentsPro--Pagination {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    min-height: 80px;
+  }
+
+  .attachmentsPro--PaginationButtons {
+    width: 100%;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .attachmentsPro--InsertButton {
+    width: 100%;
+  }
+  
+  .attachmentsPro--InsertButton button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    min-height: 48px;
+  }
+
+  .attachmentsPro--CloseButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    z-index: 1000;
+    background-color: var(--background-primary);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease-in-out;
+    border: 1px solid var(--background-modifier-border);
+  }
+  
+  .attachmentsPro--CloseButton:hover {
+    background-color: var(--background-modifier-hover);
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border-color: var(--text-muted);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .attachmentsPro--ViewContainer {
+    border-radius: 0;
+    border: none;
+  }
+
+  .attachmentsPro--Content {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .attachmentsPro--Header {
+    padding: 12px;
+    min-height: 60px;
+  }
+
+  .attachmentsPro--Pagination {
+    padding: 12px;
+    min-height: 70px;
+  }
+}
+
+/* ===== GRID LAYOUT IMPROVEMENTS ===== */
+.attachmentsPro--Content {
+  /* Dynamic grid sizing based on container width */
+  grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 15vw, 180px), 1fr));
+}
+
+/* Large screens - more columns */
+@media screen and (min-width: 1200px) {
+  .attachmentsPro--Content {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: clamp(16px, 3vw, 24px);
+  }
+}
+
+/* ===== SELECTION INDICATORS ===== */
+.attachmentsPro--SelectionCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 24px;
+}
+
+.attachmentsPro--Header .attachmentsPro--SelectionCount {
+  margin-left: auto;
+}
+
+/* ===== DRAG AND DROP STYLING ===== */
+.attachmentsPro--Item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg) scale(0.95);
+}
+
+.attachmentsPro--Content.drag-over {
+  background-color: var(--background-modifier-hover);
+  border: 2px dashed var(--interactive-accent);
+}

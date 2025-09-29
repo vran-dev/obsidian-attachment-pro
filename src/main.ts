@@ -7,8 +7,7 @@ import CanvasPasteOrDropHandler from "./event/canvasPasteOrDropHandler";
 import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
 import '../style/styles.css'
 import '../style/suggest.css'
-import '../style/modal.css'
-import { AttachmentsModal } from "./ui/obsidian-modal/AttachmentsModal";
+import { AttachmentsModal } from "./ui/attachments/AttachmentsModal";
 import { getLocal } from "./i18/messages";
 
 declare module "obsidian" {
@@ -94,12 +93,12 @@ export default class AttachmentProPlugin extends Plugin {
 	registerCommands() {
 		this.addCommand({
 			id: "show-attachments",
-			name: "Show Attachments", 
+			name: getLocal().SHOW_ATTACHMENTS, 
 			callback: () => {
 				new AttachmentsModal(this.app, this, false).open();
 			},
 		});
-		this.addRibbonIcon('layers-3', 'Show Attachments', () => {
+		this.addRibbonIcon('layers-3', getLocal().SHOW_ATTACHMENTS, () => {
 			new AttachmentsModal(this.app, this, false).open();
 		});
 	}
@@ -109,7 +108,7 @@ export default class AttachmentProPlugin extends Plugin {
 			this.app.workspace.on("editor-menu", (menu, editor) => {
 				menu.addItem((item) => {
 					item
-						.setTitle(getLocal().context_menu_insert)
+						.setTitle(getLocal().CONTEXT_MENU_INSERT_ATTACHMENTS)
 						.setIcon("layers-3")
 						.onClick(() => {
 							new AttachmentsModal(this.app, this, true).open();
