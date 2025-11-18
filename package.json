@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"build:local": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node scripts/copy-to-vault.mjs",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
@@ -28,6 +29,7 @@
 	"dependencies": {
 		"@floating-ui/react": "^0.26.4",
 		"@types/uuid": "^9.0.7",
+		"dotenv": "^17.2.3",
 		"lucide-react": "^0.303.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
