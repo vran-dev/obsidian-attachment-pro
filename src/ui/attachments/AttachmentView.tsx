@@ -7,6 +7,7 @@ import Select, { MultiValue } from "react-select";
 import * as React from "react";
 import { getLocal } from '../../i18/messages';
 import Modal from "../modal/Modal";
+import { generateAttachmentLink } from "src/util/linkGenerator";
 import "./AttachmentsModal.css"
 
 type Option = {
@@ -77,25 +78,7 @@ export default function AttachmentView({
 			const editor = activeView.editor;
 			const cursor = editor.getCursor();
 			const links = Array.from(selectedFiles)
-				.map(attachment => {
-					const filePath = app.vault.adapter.getResourcePath(attachment.path);
-					const fileExt = attachment.extension;
-
-					if ([...imageExtensions, "components"].includes(fileExt)) {
-						return `![[${attachment.name}]]`;
-					}
-					if (fileExt === "pdf") {
-						return `![[${attachment.path}#page=1]]`;
-					}
-					if (fileExt === "html") {
-						return `<iframe 
-									src="${filePath.replace(/^app:\/\/[a-z0-9]+\/?/i, "")}" 
-									style="width: 100%; height: 600px; border: none;" 
-									sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals">
-								</iframe>`;
-					}
-					return `[[${attachment.path}]]`
-				})
+				.map(attachment => generateAttachmentLink(attachment, app))
 				.join('\n');
 			editor.replaceRange(links, cursor);
 			onClose();

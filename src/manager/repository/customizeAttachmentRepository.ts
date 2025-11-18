@@ -6,6 +6,7 @@ import {
 } from "./attachmentSaveRepository";
 import PathResolver from "../path/pathResolver";
 import { appendOrderIfConflict } from "src/util/file";
+import { generateAttachmentLink } from "src/util/linkGenerator";
 
 export default class CustomizeAttachmentRepository
 	implements AttachmentRepository
@@ -24,11 +25,8 @@ export default class CustomizeAttachmentRepository
 			context.app
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
-		const tFile = await app.vault.createBinary(filePath, buffer);
-		const link =  context.app.fileManager.generateMarkdownLink(
-			tFile,
-			context.pageFile.path
-		);
+		const tFile = await context.app.vault.createBinary(filePath, buffer);
+		const link = generateAttachmentLink(tFile, context.app);
 		return {
 			file: tFile,
 			link: link

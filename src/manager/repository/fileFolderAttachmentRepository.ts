@@ -6,6 +6,7 @@ import {
 } from "./attachmentSaveRepository";
 import { TFile, normalizePath } from "obsidian";
 import { appendOrderIfConflict, getParentFolderFromTFile } from "src/util/file";
+import { generateAttachmentLink } from "src/util/linkGenerator";
 
 export default class FileFolderAttachmentRepository
 	implements AttachmentRepository
@@ -22,10 +23,7 @@ export default class FileFolderAttachmentRepository
 		);
 		const filePath = appendOrderIfConflict(fullPath, context.app);
 		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const link =  context.app.fileManager.generateMarkdownLink(
-			tFile,
-			context.pageFile.path
-		);
+		const link = generateAttachmentLink(tFile, context.app);
 		return {
 			file: tFile,
 			link: link

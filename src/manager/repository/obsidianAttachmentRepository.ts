@@ -6,6 +6,7 @@ import {
 } from "src/util/file";
 import { log } from "src/util/log";
 import { AttachmentRepositoryContext, AttachmentResult } from "./attachmentSaveRepository";
+import { generateAttachmentLink } from "src/util/linkGenerator";
 
 export default class ObsidianAttachmentRepository {
 	async handle(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
@@ -34,11 +35,8 @@ export default class ObsidianAttachmentRepository {
 			fileBuffer
 		);
 
-		// generate and append markdown link
-		const link = context.app.fileManager.generateMarkdownLink(
-			tFile,
-			context.pageFile.path
-		);
+		// generate and append markdown link using the same logic as AttachmentView
+		const link = generateAttachmentLink(tFile, context.app);
 		return {
 			file: tFile,
 			link: link,
