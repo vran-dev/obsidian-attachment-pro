@@ -4,10 +4,14 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "ES6",
+    "target": "ES2017",
     "allowJs": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "moduleResolution": "bundler",
+    "types": [
+      "obsidian",
+      "node"
+    ],
     "importHelpers": true,
     "isolatedModules": true,
     "strictNullChecks": true,
@@ -16,16 +20,27 @@
       "DOM",
       "ES5",
       "ES6",
-      "ES7"
+      "ES2017",
+      "ES2018",
+      "ES2019",
+      "ES2020"
     ],
     "paths": {
-      "@/*": [
-        "./*"
+      "@src/*": [
+        "src/*"
       ],
-    }
+      "@style/*": [
+        "style/*"
+      ]
+    },
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

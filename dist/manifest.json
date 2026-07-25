@@ -1,0 +1,11 @@
+{
+	"id": "attachment-pro",
+	"name": "Attachment Pro",
+	"version": "0.3.1",
+	"minAppVersion": "0.13.0",
+	"description": "your last obsidian attachment plugin",
+	"author": "vran",
+	"authorUrl": "https://github.com/vran-dev",
+	"fundingUrl": "https://www.buymeacoffee.com/vran",
+	"isDesktopOnly": false
+}
