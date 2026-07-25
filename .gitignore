@@ -22,5 +22,12 @@ data.json
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
 
-# Environment variables file
+# Exclude Windows Explorer (Resource Manager) View States
+Thumbs.db
+
+# other
+*.bat
+*.zip
 .env
+dist
+.backup/
