@@ -21,7 +21,7 @@ export default class FileTagAttachmentScopeMatcher
 		}
 
 		// merge tags from content
-		const allTags = [];
+		const allTags: string[] = [];
 		if (fileCache.tags) {
 			const tags = fileCache.tags.map((t) => t.tag.substring(1));
 			// obsidian tag starts with #, so we need to remove it
@@ -31,7 +31,11 @@ export default class FileTagAttachmentScopeMatcher
 		// merge tags from frontmatter
 		if (fileCache.frontmatter) {
 			const tags = fileCache.frontmatter["tags"];
-			allTags.push(...tags);
+			if (Array.isArray(tags)) {
+				allTags.push(...tags.map(String));
+			} else if (typeof tags === "string") {
+				allTags.push(...tags.split(",").map((t) => t.trim()));
+			}
 		}
 
 		if (scope.operator === "CONTAINS_ALL") {
