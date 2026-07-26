@@ -1,10 +1,11 @@
-import { TFile, App, Editor } from "obsidian";
+import { TFile, App, Editor, Notice } from "obsidian";
 import { AttachmentProConfig, DefaultRule } from "./types";
 import { AttachmentScopeMatchers } from "./scope/attachmentScopeMatcher";
 import { AttachmentRepositories, AttachmentResult } from "./repository/attachmentSaveRepository";
 import { log } from "../util/log";
 import ObsidianAttachmentRepository from "./repository/obsidianAttachmentRepository";
 import { AttachmentNameFormatters } from "./format/attachmentNameFormatter";
+import { getLocal } from "../i18/messages";
 
 export default class AttachmentManager {
 	onEditorAttachmentSave(
@@ -36,15 +37,15 @@ export default class AttachmentManager {
 		);
 	}
 
-	onAttachmentSave(
+	async onAttachmentSave(
 		page: TFile,
 		config: AttachmentProConfig,
 		app: App,
 		attachmentFile: File,
 		index: number,
 		onSave: (link: AttachmentResult) => void,
-		fallback: () => void
-	) {
+		fallback: () => void | Promise<void>
+	): Promise<void> {
 		const enabledRules = config.rules
 			.filter((r) => r.enabled)
 			.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
@@ -59,35 +60,43 @@ export default class AttachmentManager {
 				app
 			);
 			if (isScopeMatched) {
-				const attachmentFileName = AttachmentNameFormatters.format(
-					attachmentFile,
-					page,
-					rule,
-					app,
-					index
-				);
-				AttachmentRepositories.handle(
-					{
+				try {
+					const attachmentFileName = AttachmentNameFormatters.format(
 						attachmentFile,
-						formatedAttachmentName: attachmentFileName,
-						pageFile: page,
+						page,
 						rule,
 						app,
-					},
-					onSave
-				);
+						index
+					);
+					await AttachmentRepositories.handle(
+						{
+							attachmentFile,
+							formatedAttachmentName: attachmentFileName,
+							pageFile: page,
+							rule,
+							app,
+						},
+						onSave
+					);
+				} catch (e) {
+					this.notifySaveFailure(attachmentFile.name, e);
+				}
 				return;
 			}
 		}
-		fallback();
+		try {
+			await fallback();
+		} catch (e) {
+			this.notifySaveFailure(attachmentFile.name, e);
+		}
 	}
 
-	private fallbackToDefaultRepository(
+	private async fallbackToDefaultRepository(
 		page: TFile,
 		app: App,
 		attachmentFile: File,
 		onSave: (link: AttachmentResult) => void
-	) {
+	): Promise<void> {
 		// fallback to default repository
 		const rule = new DefaultRule();
 		const formattedName = AttachmentNameFormatters.format(
@@ -96,16 +105,21 @@ export default class AttachmentManager {
 			rule,
 			app
 		);
-		new ObsidianAttachmentRepository()
-			.handle({
-				attachmentFile,
-				formatedAttachmentName: formattedName,
-				pageFile: page,
-				rule: rule,
-				app,
-			})
-			.then((attachment) => {
-				onSave(attachment);
-			});
+		const attachment = await new ObsidianAttachmentRepository().handle({
+			attachmentFile,
+			formatedAttachmentName: formattedName,
+			pageFile: page,
+			rule: rule,
+			app,
+		});
+		onSave(attachment);
+	}
+
+	private notifySaveFailure(attachmentName: string, e: unknown) {
+		const reason = e instanceof Error ? e.message : String(e);
+		log("[Attachment Save Failed] ", attachmentName, e);
+		new Notice(
+			`${getLocal().ATTACHMENT_SAVE_FAILED_NOTICE}: ${attachmentName} (${reason})`
+		);
 	}
 }
