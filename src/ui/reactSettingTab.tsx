@@ -43,7 +43,7 @@ export default class ReactAttachmentSettingTab extends PluginSettingTab {
 
 export const repositoryOptions = [
 	{
-		value: "VAULT_SUBFOLDER",
+		value: "ROOT_FOLDER",
 		label: getLocal().FILE_POSITION_TYPE_ROOT,
 	},
 	{

@@ -1,5 +1,6 @@
 import { Notice, Plugin, CanvasView } from "obsidian";
 import { AttachmentProConfig } from "./manager/types";
+import { migrateConfig } from "./manager/migrate";
 import { DEFAULT_SETTINGS } from "./setting/defaultSetting";
 import { log } from "./util/log";
 import ReactAttachmentSettingTab from "./ui/reactSettingTab";
@@ -38,11 +39,16 @@ export default class AttachmentProPlugin extends Plugin {
 	onunload() { }
 
 	async loadSettings() {
-		this.settings = Object.assign(
+		const merged = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
+		this.settings = migrateConfig(merged);
+		if (JSON.stringify(this.settings) !== JSON.stringify(merged)) {
+			// 迁移产生了变化，落盘避免坏值残留在 data.json
+			await this.saveData(this.settings);
+		}
 		log("[Config] loading plugins", this.settings);
 	}
 
