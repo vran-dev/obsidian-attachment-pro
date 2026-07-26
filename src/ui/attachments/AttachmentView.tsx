@@ -124,7 +124,6 @@ export default function AttachmentView({
 		if (!attachments) {
 			return [];
 		}
-		console.log(filter);
 		return attachments
 			.filter((attachment) => {
 				if (filter.name !== "") {

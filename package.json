@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "node --env-file-if-exists=.env scripts/deploy.mjs link && node scripts/esbuild.config.mjs dev",
 		"build": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs prod && node --env-file-if-exists=.env scripts/deploy.mjs copy",
-		"release": "pnpm run build && node scripts/version-bump.mjs && pnpm i"
+		"release": "pnpm run build && node scripts/version-bump.mjs && pnpm i",
+		"lint": "eslint src/"
 	},
 	"keywords": [
 		"Obsidian Plugin"
@@ -14,6 +15,7 @@
 	"author": "vran",
 	"license": "MIT",
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@types/luxon": "^3.7.2",
 		"@types/node": "^25.9.1",
 		"@types/react": "^18.3.29",
