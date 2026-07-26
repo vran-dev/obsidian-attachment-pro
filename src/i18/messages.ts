@@ -55,6 +55,21 @@ export interface Message {
 	SHOW_ATTACHMENTS: string;
 	CONTEXT_MENU_INSERT_ATTACHMENTS: string;
 	INSERT_SELECTED_ATTACHMENTS: string;
+
+	// attachments modal
+	ATTACHMENTS_LOADING: string;
+	ATTACHMENTS_EMPTY_TITLE: string;
+	ATTACHMENTS_EMPTY_DESC: string;
+	ATTACHMENTS_FILTER_IMAGES_ALL: string;
+	ATTACHMENTS_SEARCH_PLACEHOLDER: string;
+	ATTACHMENTS_ONLY_UNUSED: string;
+	ATTACHMENTS_PREVIEW_UNSUPPORTED: string;
+	PAGINATION_PREV: string;
+	PAGINATION_NEXT: string;
+	MODAL_CLOSE: string;
+
+	// error feedback
+	ATTACHMENT_SAVE_FAILED_NOTICE: string;
 }
 
 export function getLocal(): Message {

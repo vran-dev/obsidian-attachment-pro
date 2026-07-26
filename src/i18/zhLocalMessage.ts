@@ -53,4 +53,19 @@ export default class ZhLocalMessage implements Message {
 	SHOW_ATTACHMENTS = "打开附件库";
 	CONTEXT_MENU_INSERT_ATTACHMENTS = "从附件库中插入";
 	INSERT_SELECTED_ATTACHMENTS = "插入选中的附件";
+
+	// attachments modal
+	ATTACHMENTS_LOADING = "附件加载中...";
+	ATTACHMENTS_EMPTY_TITLE = "没有找到附件";
+	ATTACHMENTS_EMPTY_DESC = "试着调整筛选条件，或先向仓库中添加附件。";
+	ATTACHMENTS_FILTER_IMAGES_ALL = "图片（全部）";
+	ATTACHMENTS_SEARCH_PLACEHOLDER = "按名称搜索";
+	ATTACHMENTS_ONLY_UNUSED = "仅未引用";
+	ATTACHMENTS_PREVIEW_UNSUPPORTED = "无法预览该文件类型";
+	PAGINATION_PREV = "上一页";
+	PAGINATION_NEXT = "下一页";
+	MODAL_CLOSE = "关闭";
+
+	// error feedback
+	ATTACHMENT_SAVE_FAILED_NOTICE = "Attachment Pro: 附件保存失败";
 }
