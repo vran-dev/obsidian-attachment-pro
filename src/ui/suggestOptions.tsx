@@ -126,7 +126,7 @@ export function getTagOptions(inputStr: string, app: App): SuggestItem[] {
 	const lowerCaseInputStr = inputStr.toLowerCase();
 	abstractFiles.forEach((file: TAbstractFile) => {
 		if (file instanceof TFile) {
-			const cache = this.app.metadataCache.getCache(file.path);
+			const cache = app.metadataCache.getCache(file.path);
 			if (cache) {
 				const fileTags = getAllTags(cache);
 				fileTags?.forEach((tag) => {
