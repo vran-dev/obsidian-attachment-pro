@@ -29,7 +29,9 @@ export default function AttachmentView({
 	onClose: () => void;
 }): JSX.Element {
 	const app = useObsidianApp();
+	const local = getLocal();
 	const [attachments, setAttachments] = useState<TFile[]>();
+	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const [filter, setFilter] = useState(new AttachmentFilter());
@@ -97,17 +99,27 @@ export default function AttachmentView({
 
 	const listAttachments = useMemo(() => {
 		return async () => {
-			const attachmentHandler = new AttachmentHandler();
-			const attachments = await attachmentHandler.listAttachments(app);
-			setAttachments(attachments);
+			setLoading(true);
+			try {
+				const attachmentHandler = new AttachmentHandler();
+				const attachments = await attachmentHandler.listAttachments(app);
+				setAttachments(attachments);
+			} finally {
+				setLoading(false);
+			}
 		};
 	}, [app]);
-	
+
 	const listUnusedAttachments = useMemo(() => {
 		return async () => {
-			const attachmentHandler = new AttachmentHandler();
-			const attachments = await attachmentHandler.listUnusedAttachments(app);
-			setAttachments(attachments);
+			setLoading(true);
+			try {
+				const attachmentHandler = new AttachmentHandler();
+				const attachments = await attachmentHandler.listUnusedAttachments(app);
+				setAttachments(attachments);
+			} finally {
+				setLoading(false);
+			}
 		};
 	}, [app]);
 	
@@ -164,7 +176,7 @@ export default function AttachmentView({
 		onlyOrphan: boolean;
 		setOnlyOrphan: React.Dispatch<React.SetStateAction<boolean>>;
 	}) => {
-		const allImageOption = { value: 'AllImages', label: 'Images(All)' };
+		const allImageOption = { value: 'AllImages', label: local.ATTACHMENTS_FILTER_IMAGES_ALL };
 
 		return (
 			<div className="attachmentsPro--Header">
@@ -204,7 +216,7 @@ export default function AttachmentView({
 						onChange={(e) => {
 							setFilter(prevFilter => ({ ...prevFilter, name: e.target.value }))
 						}}
-						placeholder="Search by name"
+						placeholder={local.ATTACHMENTS_SEARCH_PLACEHOLDER}
 					/>
 					<Select
 						name="pageSize"
@@ -230,7 +242,7 @@ export default function AttachmentView({
 								setOnlyOrphan(e.target.checked);
 							}}
 						/>
-						Only Unused
+						{local.ATTACHMENTS_ONLY_UNUSED}
 					</label>
 				</div>
 			</div>
@@ -263,7 +275,7 @@ export default function AttachmentView({
 			}
 			else {
 				return (
-					<div>can't preview this file type</div>
+					<div>{local.ATTACHMENTS_PREVIEW_UNSUPPORTED}</div>
 				)
 			}
 		};
@@ -374,20 +386,20 @@ export default function AttachmentView({
 		return (
 			<div className="attachmentsPro--Pagination">
 				<div className="attachmentsPro--PaginationButtons">
-					<button 
-						onClick={() => setPage((p) => Math.max(1, p - 1))} 
+					<button
+						onClick={() => setPage((p) => Math.max(1, p - 1))}
 						disabled={page === 1}
 					>
-						Prev
+						{local.PAGINATION_PREV}
 					</button>
 					<span>
 						{page} / {totalPages}
 					</span>
-					<button 
-						onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+					<button
+						onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
 						disabled={page === totalPages}
 					>
-						Next
+						{local.PAGINATION_NEXT}
 					</button>
 				</div>
 				{canInsert && selectedFiles.length > 0 && (
@@ -415,13 +427,33 @@ export default function AttachmentView({
 					setOnlyOrphan
 				})
 			}
-			{
-				Content({
-					attachments: paginatedAttachments,
-					supportPreviewExtensions,
-					app
-				})
-			}
+			{loading ? (
+				<div className="attachmentsPro--LoadingState">
+					{local.ATTACHMENTS_LOADING}
+				</div>
+			) : filteredAttachments.length === 0 ? (
+				<div className="attachmentsPro--EmptyState">
+					<h3>{local.ATTACHMENTS_EMPTY_TITLE}</h3>
+					<p>{local.ATTACHMENTS_EMPTY_DESC}</p>
+				</div>
+			) : (
+				<>
+					{
+						Content({
+							attachments: paginatedAttachments,
+							supportPreviewExtensions,
+							app
+						})
+					}
+					{
+						Pagination({
+							page,
+							setPage,
+							totalPages: Math.ceil(filteredAttachments.length / pageSize)
+						})
+					}
+				</>
+			)}
 			{selectedFile && (
 				<PreviewModal
 					selectedFile={selectedFile}
@@ -429,13 +461,6 @@ export default function AttachmentView({
 					setSelectedFile={setSelectedFile}
 				/>
 			)}
-			{
-				Pagination({
-					page,
-					setPage,
-					totalPages: Math.ceil(filteredAttachments.length / pageSize)
-				})
-			}
 		</div>
 		</>
 	);
