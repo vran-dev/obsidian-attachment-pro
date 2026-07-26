@@ -13,27 +13,30 @@ import { log } from "src/util/log";
 export default class EditorPasteOrDropHandler {
 	attachmentManager = new AttachmentManager();
 
+	/**
+	 * @returns true 表示事件已由本插件处理,调用方需要 preventDefault
+	 */
 	on(
 		evt: ClipboardEvent | DragEvent,
 		editor: Editor,
 		info: MarkdownView | MarkdownFileInfo,
 		plugin: AttachmentProPlugin
-	) {
+	): boolean {
 		const dataItems = this.getDataTransferItem(evt);
 		if (!dataItems) {
 			log("[Event] ignoresd no data items");
-			return;
+			return false;
 		}
 
 		if (isAllStringType(dataItems)) {
 			log("[Event] ignoresd all is string type");
-			return;
+			return false;
 		}
 
 		const pageFile = info.file;
 		if (!pageFile) {
 			log("[Event] ignoresd no active page file");
-			return;
+			return false;
 		}
 
 		log("[Event] prepare to handle " + dataItems.length + " items");
@@ -41,10 +44,9 @@ export default class EditorPasteOrDropHandler {
 		if (dataItems.length == 2 && dataItems[0].type == "text/html" && dataItems[1].kind == "file"){
 			log("[Event] found network image with string, only process the file.");
 			this.handleFile(dataItems[1], pageFile, editor, plugin, 0);
-			evt.preventDefault();
-			return;
+			return true;
 		}
-		
+
 		for (let i = dataItems.length - 1; i >= 0; i--) {
 			const item = dataItems[i];
 
@@ -55,7 +57,7 @@ export default class EditorPasteOrDropHandler {
 				this.handleString(item, editor);
 			}
 		}
-		evt.preventDefault();
+		return true;
 	}
 
 	getDataTransferItem(evt: DragEvent | ClipboardEvent) {

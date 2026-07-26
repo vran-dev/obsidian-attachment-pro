@@ -1,26 +1,29 @@
 import { App, TFile } from "obsidian";
+import { log } from "src/util/log";
 
 export class AttachmentHandler {
 	async listUnusedAttachments(app: App): Promise<TFile[]> {
 		const startTime = Date.now();
-		
+
 		const attachments: TFile[] = await this.listAttachments(app);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const usedAttachments: any = [];
+		// resolvedLinks 的内层 key 即被引用文件的路径，直接以路径判重，
+		// 避免 getAbstractFileByPath 返回 null 污染集合与 O(n²) 的数组 includes
+		const usedAttachmentPaths = new Set<string>();
 		const resolvedLinks = app.metadataCache.resolvedLinks;
 		if (resolvedLinks) {
-			for (const [mdFile, links] of Object.entries(resolvedLinks)){
-				for (const [filePath, nr] of Object.entries(resolvedLinks[mdFile])){
-					const file = app.vault.getAbstractFileByPath(filePath);
-					usedAttachments.push(file);
+			for (const links of Object.values(resolvedLinks)) {
+				for (const filePath of Object.keys(links)) {
+					usedAttachmentPaths.add(filePath);
 				}
 			}
 		}
 
-		const unusedAttachments: TFile[] = attachments.filter((file) =>!usedAttachments.includes(file));
+		const unusedAttachments: TFile[] = attachments.filter(
+			(file) => !usedAttachmentPaths.has(file.path)
+		);
 
 		const endTime = Date.now();
-		console.log(
+		log(
 			`[AttachmentHandler] list unused attachments cost ${
 				endTime - startTime
 			}ms`
@@ -30,17 +33,14 @@ export class AttachmentHandler {
 
 	async listAttachments(app: App): Promise<TFile[]> {
 		const startTime = Date.now();
-		
-		const allFiles : TFile[] = app.vault.getFiles();
-		const attachments: TFile[] = [];
-		for(let i = 0; i < allFiles.length; i++){
-			if(!['md', 'canvas'].includes(allFiles[i].extension)) {
-				attachments.push(allFiles[i]);
-			}
-		}
-		
+
+		const allFiles: TFile[] = app.vault.getFiles();
+		const attachments: TFile[] = allFiles.filter(
+			(file) => !["md", "canvas"].includes(file.extension)
+		);
+
 		const endTime = Date.now();
-		console.log(
+		log(
 			`[AttachmentHandler] list attachments cost ${endTime - startTime}ms`
 		);
 		return attachments;

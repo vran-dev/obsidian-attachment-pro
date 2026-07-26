@@ -172,9 +172,6 @@ const context = await esbuild.context({
 	outdir: outDir,
 	minify: prod,
 	drop: prod ? ["console"] : [],
-	logOverride: {
-		"direct-eval": "silent"
-	}
 });
 
 // 初始构建时复制 manifest.json

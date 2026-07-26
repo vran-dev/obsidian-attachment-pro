@@ -1,3 +1,4 @@
+import { getLanguage } from "obsidian";
 import EnLocalMessage from "./enLocalMessage";
 import ZhLocalMessage from "./zhLocalMessage";
 
@@ -57,9 +58,10 @@ export interface Message {
 }
 
 export function getLocal(): Message {
-	const lang = window.localStorage.getItem("language");
+	const lang = getLanguage();
 	switch (lang) {
 		case "zh":
+		case "zh-TW":
 			return new ZhLocalMessage();
 		default:
 			return new EnLocalMessage();
