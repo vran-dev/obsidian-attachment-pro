@@ -74,15 +74,15 @@ export function SettingForm(props: {
 	};
 
 	const onRuleAdd = () => {
-		const newRules = [...config.rules, new DefaultRule()];
+		const rule = new DefaultRule();
+		// 新规则排在现有规则之后执行
+		rule.sort =
+			Math.max(-1, ...config.rules.map((item) => item.sort ?? 0)) + 1;
 		const newConfig = {
 			...config,
-			rules: newRules,
+			rules: [...config.rules, rule],
 		};
-		setConfig({
-			...config,
-			rules: newRules,
-		});
+		setConfig(newConfig);
 		onChange(newConfig);
 	};
 
@@ -97,7 +97,8 @@ export function SettingForm(props: {
 			}
 			const newConfig = {
 				...config,
-				rules: newRules,
+				// 重排后将 sort 与展示顺序对齐，保证执行优先级与 UI 一致
+				rules: newRules.map((rule, i) => ({ ...rule, sort: i })),
 			};
 			setConfig(newConfig);
 			onChange(newConfig);

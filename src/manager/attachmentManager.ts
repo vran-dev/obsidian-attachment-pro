@@ -45,7 +45,9 @@ export default class AttachmentManager {
 		onSave: (link: AttachmentResult) => void,
 		fallback: () => void
 	) {
-		const enabledRules = config.rules.filter((r) => r.enabled);
+		const enabledRules = config.rules
+			.filter((r) => r.enabled)
+			.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
 		log("[Enabled Rules] ", enabledRules);
 
 		for (let i = 0; i < enabledRules.length; i++) {
