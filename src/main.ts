@@ -65,7 +65,12 @@ export default class AttachmentProPlugin extends Plugin {
 	registerEditorPasteHandler() {
 		this.registerEvent(
 			this.app.workspace.on("editor-paste", (evt, editor, info) => {
-				new EditorPasteOrDropHandler().on(evt, editor, info, this);
+				if (evt.defaultPrevented) {
+					return;
+				}
+				if (new EditorPasteOrDropHandler().on(evt, editor, info, this)) {
+					evt.preventDefault();
+				}
 			})
 		);
 	}
@@ -73,7 +78,12 @@ export default class AttachmentProPlugin extends Plugin {
 	registerEditorDropHandler() {
 		this.registerEvent(
 			this.app.workspace.on("editor-drop", (evt, editor, info) => {
-				new EditorPasteOrDropHandler().on(evt, editor, info, this);
+				if (evt.defaultPrevented) {
+					return;
+				}
+				if (new EditorPasteOrDropHandler().on(evt, editor, info, this)) {
+					evt.preventDefault();
+				}
 			})
 		);
 	}
