@@ -3,26 +3,27 @@ import { AttachmentRule, AttachmentSaveType } from "src/manager/types";
 import FileFolderAttachmentRepository from "./fileFolderAttachmentRepository";
 import FileSubfolderAttachmentRepository from "./fileSubfolderAttachmentRepository";
 import VaultfolderAttachmentRepository from "./vaultfolderAttachmentRepository";
-import { log } from "src/util/log";
+import ObsidianAttachmentRepository from "./obsidianAttachmentRepository";
 import CustomizeAttachmentRepository from "./customizeAttachmentRepository";
+import { log } from "src/util/log";
 
 export interface AttachmentRepository {
-	accept(scope: AttachmentSaveType): boolean;
+	accept(type: AttachmentSaveType): boolean;
 
 	save(context: AttachmentRepositoryContext): Promise<AttachmentResult>;
 }
 
-export class AttachmentResult {
+export interface AttachmentResult {
 	file: TFile;
 	link: string;
 }
 
-export class AttachmentRepositoryContext {
-	public attachmentFile: File;
-	public formatedAttachmentName: string;
-	public pageFile: TFile;
-	public rule: AttachmentRule;
-	public app: App;
+export interface AttachmentRepositoryContext {
+	attachmentFile: File;
+	formattedAttachmentName: string;
+	pageFile: TFile;
+	rule: AttachmentRule;
+	app: App;
 }
 
 export const attachmentRepositories: AttachmentRepository[] = [
@@ -30,6 +31,7 @@ export const attachmentRepositories: AttachmentRepository[] = [
 	new FileSubfolderAttachmentRepository(),
 	new VaultfolderAttachmentRepository(),
 	new CustomizeAttachmentRepository(),
+	new ObsidianAttachmentRepository(),
 ];
 
 export class AttachmentRepositories {

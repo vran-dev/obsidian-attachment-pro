@@ -1,38 +1,18 @@
+import { normalizePath } from "obsidian";
 import { AttachmentSaveType } from "src/manager/types";
-import {
-	AttachmentRepositoryContext,
-	AttachmentRepository,
-	AttachmentResult,
-} from "./attachmentSaveRepository";
-import { TFile, normalizePath } from "obsidian";
-import { appendOrderIfConflict, getParentFolderFromTFile } from "src/util/file";
-import { generateAttachmentLink } from "src/util/linkGenerator";
+import { getParentFolderFromTFile } from "src/util/file";
+import { AttachmentRepositoryContext } from "./attachmentSaveRepository";
+import { BaseAttachmentRepository } from "./baseAttachmentRepository";
 
-export default class FileFolderAttachmentRepository
-	implements AttachmentRepository
-{
-	accept(scope: AttachmentSaveType): boolean {
-		return scope == "FILE_FOLDER";
+export default class FileFolderAttachmentRepository extends BaseAttachmentRepository {
+	accept(type: AttachmentSaveType): boolean {
+		return type === "FILE_FOLDER";
 	}
 
-	async save(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
-		const buffer = await context.attachmentFile.arrayBuffer();
-		const fullPath = this.resolePath(
-			context.formatedAttachmentName,
-			context.pageFile
+	protected resolvePath(context: AttachmentRepositoryContext): string {
+		const pageParentFolder = getParentFolderFromTFile(context.pageFile);
+		return normalizePath(
+			`${pageParentFolder}/${context.formattedAttachmentName}`
 		);
-		const filePath = appendOrderIfConflict(fullPath, context.app);
-		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const link = generateAttachmentLink(tFile, context.app);
-		return {
-			file: tFile,
-			link: link
-		}
-	}
-
-	resolePath(attachmentName: string, pageFile: TFile) {
-		const pageParentFolder = getParentFolderFromTFile(pageFile);
-		const path = `${pageParentFolder}/${attachmentName}`;
-		return normalizePath(path);
 	}
 }
