@@ -5,6 +5,13 @@ import { StrictMode } from "react";
 import { SettingForm } from "./form/SettingForm";
 import { getLocal } from "src/i18/messages";
 import { ObsidianAppContext } from "src/context/obsidianAppContext";
+import {
+	AttachmentNameFormatType,
+	AttachmentSaveType,
+	AttachmentScopeType,
+	TagMatchOperator,
+} from "src/manager/types";
+import { SelectOption } from "./select/Select";
 
 export default class ReactAttachmentSettingTab extends PluginSettingTab {
 	plugin: AttachmentProPlugin;
@@ -27,7 +34,7 @@ export default class ReactAttachmentSettingTab extends PluginSettingTab {
 						title={this.plugin.manifest.name}
 						config={this.plugin.settings}
 						onChange={(config) => {
-							this.plugin.replaceSettings(config);
+							void this.plugin.replaceSettings(config);
 						}}
 					/>
 				</ObsidianAppContext.Provider>
@@ -41,7 +48,7 @@ export default class ReactAttachmentSettingTab extends PluginSettingTab {
 	}
 }
 
-export const repositoryOptions = [
+export const repositoryOptions: SelectOption<AttachmentSaveType>[] = [
 	{
 		value: "ROOT_FOLDER",
 		label: getLocal().FILE_POSITION_TYPE_ROOT,
@@ -60,7 +67,7 @@ export const repositoryOptions = [
 	},
 ];
 
-export const scopeOptions = [
+export const scopeOptions: SelectOption<AttachmentScopeType>[] = [
 	{
 		value: "ALL",
 		label: getLocal().SCOPE_TYPE_ALL,
@@ -79,7 +86,7 @@ export const scopeOptions = [
 	},
 ];
 
-export const attachmentNameFormatOptions = [
+export const attachmentNameFormatOptions: SelectOption<AttachmentNameFormatType>[] = [
 	{
 		value: "ORIGINAL",
 		label: getLocal().FILE_NAME_FORMAT_TYPE_ORIGINAL,
@@ -98,7 +105,7 @@ export const attachmentNameFormatOptions = [
 	},
 ];
 
-export const operationOptions = [
+export const operationOptions: SelectOption<TagMatchOperator>[] = [
 	{
 		value: "CONTAINS_ALL",
 		label: getLocal().OPERATOR_CONTAINS_ALL,

@@ -15,6 +15,9 @@ export default class FileTagAttachmentScopeMatcher
 		scope: AttachmentScope,
 		app: App
 	): boolean {
+		if (scope.type !== "FILE_TAG") {
+			return false;
+		}
 		const fileCache = app.metadataCache.getFileCache(page);
 		if (!fileCache) {
 			return false;
@@ -38,20 +41,18 @@ export default class FileTagAttachmentScopeMatcher
 			}
 		}
 
+		const scopeTags = scope.ranges.map((t) => t.value);
 		if (scope.operator === "CONTAINS_ALL") {
-			// @ts-ignore
-			return this.isContainsAll(allTags, scope.ranges.map((t) => t.value));
-		} else {
-			// @ts-ignore
-			return this.isContainsAny(allTags, scope.ranges.map((t) => t.value));
+			return this.isContainsAll(allTags, scopeTags);
 		}
+		return this.isContainsAny(allTags, scopeTags);
 	}
 
 	isContainsAll(fileTags: string[], scopeTags: string[]): boolean {
-		return scopeTags.every((tag) => fileTags.contains(tag));
+		return scopeTags.every((tag) => fileTags.includes(tag));
 	}
 
 	isContainsAny(fileTags: string[], scopeTags: string[]): boolean {
-		return scopeTags.some((tag) => fileTags.contains(tag));
+		return scopeTags.some((tag) => fileTags.includes(tag));
 	}
 }

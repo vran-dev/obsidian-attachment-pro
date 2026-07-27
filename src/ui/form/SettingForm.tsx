@@ -2,8 +2,11 @@ import {
 	AttachmentProConfig,
 	AttachmentRule,
 	AttachmentScope,
-	AttachmentScopeType,
 	DefaultRule,
+	ScopeRangeItem,
+	createRepositorySetting,
+	createScope,
+	isRangedScope,
 } from "src/manager/types";
 import {
 	attachmentNameFormatOptions,
@@ -105,6 +108,34 @@ export function SettingForm(props: {
 		}
 	};
 
+	/** FILE_SUBFOLDER / CUSTOMIZE 仓库的目录路径变更 */
+	const onRepositoryPathChange = (rule: AttachmentRule, path: string) => {
+		const { repository } = rule;
+		if (
+			repository.type !== "FILE_SUBFOLDER" &&
+			repository.type !== "CUSTOMIZE"
+		) {
+			return;
+		}
+		onRuleChange({ ...rule, repository: { ...repository, path } });
+	};
+
+	/** 作用域取值列表（扩展名/目录/标签）变更 */
+	const onScopeRangesChange = (
+		rule: AttachmentRule,
+		scope: AttachmentScope,
+		ranges: ScopeRangeItem[]
+	) => {
+		onRuleChange({
+			...rule,
+			scopes: rule.scopes.map((item) =>
+				item.id === scope.id && isRangedScope(item)
+					? { ...item, ranges }
+					: item
+			),
+		});
+	};
+
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [tooltip, setTooltip] = useState("");
 
@@ -135,7 +166,7 @@ export function SettingForm(props: {
 					</div>
 				</>
 			)}
-			{config.rules.map((rule, index) => {
+			{config.rules.map((rule) => {
 				return (
 					<div key={rule.id} className="attachment-pro-form">
 						<div data-rule-id={rule.id} className="form-toolbar">
@@ -144,13 +175,13 @@ export function SettingForm(props: {
 								className="menu-item"
 								onClick={() => move(rule.id, true)}
 								onMouseEnter={(e) => {
+									// currentTarget 在事件派发结束后会被置空，先取出元素供闭包使用
+									const el = e.currentTarget;
 									refs.setPositionReference({
 										getBoundingClientRect: () =>
-											//@ts-ignore
-											e.target.getBoundingClientRect(),
+											el.getBoundingClientRect(),
 										getClientRects: () =>
-											//@ts-ignore
-											e.target.getClientRects(),
+											el.getClientRects(),
 									});
 									setTooltip(local.MOVE_UP_TOOLTIP);
 									setShowTooltip(true);
@@ -164,18 +195,17 @@ export function SettingForm(props: {
 								className="menu-item"
 								onClick={() => move(rule.id, false)}
 								onMouseEnter={(e) => {
+									const el = e.currentTarget;
 									refs.setPositionReference({
 										getBoundingClientRect: () =>
-											// @ts-ignore
-											e.target.getBoundingClientRect(),
+											el.getBoundingClientRect(),
 										getClientRects: () =>
-											//@ts-ignore
-											e.target.getClientRects(),
+											el.getClientRects(),
 									});
 									setTooltip(local.MOVE_DOWN_TOOLTIP);
 									setShowTooltip(true);
 								}}
-								onMouseLeave={(e) => setShowTooltip(false)}
+								onMouseLeave={() => setShowTooltip(false)}
 								{...getReferenceProps()}
 							>
 								<ChevronDown />
@@ -195,39 +225,29 @@ export function SettingForm(props: {
 									onChange={(value) => {
 										onRuleChange({
 											...rule,
-											repository: {
-												//@ts-ignore
-												type: value,
-												path: "",
-											},
+											repository:
+												createRepositorySetting(value),
 										});
 									}}
 								/>
-								{["FILE_SUBFOLDER", "CUSTOMIZE"].contains(
-									rule.repository.type
-								) ? (
+								{rule.repository.type === "FILE_SUBFOLDER" ||
+								rule.repository.type === "CUSTOMIZE" ? (
 									<>
 										<SuggestInput
 											inputPlaceholder={
 												local.FILE_POSITION_PATH_INPUT_PLACEHOLDER
 											}
 											onInputChange={(value: string) => {
-												onRuleChange({
-													...rule,
-													repository: {
-														...rule.repository,
-														path: value,
-													},
-												});
+												onRepositoryPathChange(
+													rule,
+													value
+												);
 											}}
 											onSelected={(item) => {
-												onRuleChange({
-													...rule,
-													repository: {
-														...rule.repository,
-														path: item.value,
-													},
-												});
+												onRepositoryPathChange(
+													rule,
+													item.value
+												);
 											}}
 											defaultInputValue={
 												rule.repository.path
@@ -261,26 +281,21 @@ export function SettingForm(props: {
 												onChange={(value) => {
 													onRuleChange({
 														...rule,
-														// @ts-ignore
+														// 切换类型时重建作用域，重置 ranges/operator
 														scopes: rule.scopes.map(
-															(item) => {
-																if (
-																	item.id ===
-																	scope.id
-																) {
-																	return {
-																		...item,
-																		type: value,
-																		ranges: [], // reset ranges
-																	};
-																}
-																return item;
-															}
+															(item) =>
+																item.id ===
+																scope.id
+																	? createScope(
+																			item.id,
+																			value
+																	)
+																	: item
 														),
 													});
 												}}
 											/>
-											{scope.type == "FILE_TAG" ? (
+											{scope.type === "FILE_TAG" ? (
 												<>
 													<Select
 														defaultValue={
@@ -293,19 +308,17 @@ export function SettingForm(props: {
 															onRuleChange({
 																...rule,
 																scopes: rule.scopes.map(
-																	(item) => {
-																		if (
-																			item.id ===
-																			scope.id
-																		) {
-																			return {
-																				...item,
-																				operator:
-																					value,
-																			};
-																		}
-																		return item;
-																	}
+																	(item) =>
+																		item.id ===
+																			scope.id &&
+																		item.type ===
+																			"FILE_TAG"
+																			? {
+																					...item,
+																					operator:
+																						value,
+																			}
+																			: item
 																),
 															});
 														}}
@@ -315,24 +328,13 @@ export function SettingForm(props: {
 										</div>
 
 										<ScopeInputTag
-											rule={rule}
 											scope={scope}
-											onChange={(newTags) => {
-												const notModifiedScopes =
-													rule.scopes.filter(
-														(o) => o.id != scope.id
-													);
-												const modifiedScope = {
-													...scope,
-													ranges: newTags,
-												};
-												onRuleChange({
-													...rule,
-													scopes: [
-														...notModifiedScopes,
-														modifiedScope,
-													],
-												});
+											onChange={(newRanges) => {
+												onScopeRangesChange(
+													rule,
+													scope,
+													newRanges
+												);
 											}}
 										/>
 									</div>
@@ -361,7 +363,6 @@ export function SettingForm(props: {
 										onRuleChange({
 											...rule,
 											nameFormat: {
-												//@ts-ignore
 												type: value,
 												format:
 													value === "DATETIME"
@@ -425,16 +426,13 @@ export function SettingForm(props: {
 									</div>
 								) : null}
 
-								{
-									// @ts-ignore
-									rule.nameFormat.type === "CUSTOMIZE" ? (
-										<div className="form-description">
-											{local.EXAMPLE}
-											{": "}
-											{local.FILE_NAME_FORMAT_CUSTOM_DESC}
-										</div>
-									) : null
-								}
+								{rule.nameFormat.type === "CUSTOMIZE" ? (
+									<div className="form-description">
+										{local.EXAMPLE}
+										{": "}
+										{local.FILE_NAME_FORMAT_CUSTOM_DESC}
+									</div>
+								) : null}
 							</div>
 						</div>
 
@@ -457,38 +455,31 @@ export function SettingForm(props: {
 }
 
 function ScopeInputTag(props: {
-	rule: AttachmentRule;
 	scope: AttachmentScope;
-	onChange: (tags: { id: string; value: string }[]) => void;
+	onChange: (ranges: ScopeRangeItem[]) => void;
 }): JSX.Element {
 	const { scope } = props;
 	const local = getLocal();
 	const app = useObsidianApp();
 
-	const scopeTypes: AttachmentScopeType[] = [
-		"ATTACHMENT_FILE_EXTENSION",
-		"SPECIFIC_FILE_FOLDER",
-		"FILE_TAG",
-	];
-	if (!scopeTypes.contains(scope.type)) {
+	if (!isRangedScope(scope)) {
 		return <></>;
 	}
 
 	const excludeTriggerKeys =
-		scope.type == "SPECIFIC_FILE_FOLDER" ? [" "] : [];
+		scope.type === "SPECIFIC_FILE_FOLDER" ? [" "] : [];
 
 	let placeholder = "";
 	let icon: ReactNode | null = null;
-	let getItems: (query: string) => SuggestItem[];
+	let getItems: (query: string) => SuggestItem[] = () => [];
 	switch (scope.type) {
 		case "ATTACHMENT_FILE_EXTENSION":
 			icon = <File />;
 			placeholder = local.SCOPE_EXTENSION_VALUE_INPUT_PLACEHOLDER;
-			getItems = () => [];
 			break;
 		case "SPECIFIC_FILE_FOLDER":
 			icon = <Folder />;
-			placeholder = local.SCOPE_SPCIFIC_FOLDER_INPUT_PLACEHOLDER;
+			placeholder = local.SCOPE_SPECIFIC_FOLDER_INPUT_PLACEHOLDER;
 			getItems = (query) => getFolderOptions(query, app);
 			break;
 		case "FILE_TAG":
@@ -496,19 +487,14 @@ function ScopeInputTag(props: {
 			placeholder = local.SCOPE_TAG_VALUE_INPUT_PLACEHOLDER;
 			getItems = (query) => getTagOptions(query, app);
 			break;
-		default:
-			icon = null;
-			getItems = () => [];
 	}
-	const tags =
-		//@ts-ignore
-		scope.ranges?.map((range) => {
-			return {
-				id: range.id,
-				value: range.value,
-				icon: icon,
-			};
-		}) || [];
+	const tags = scope.ranges.map((range) => {
+		return {
+			id: range.id,
+			value: range.value,
+			icon: icon,
+		};
+	});
 	return (
 		<InputTags
 			inputPlaceholder={placeholder}
@@ -525,7 +511,7 @@ function ScopeInputTag(props: {
 				);
 			}}
 			getItems={getItems}
-			onRemove={(tag) => {}}
+			onRemove={() => {}}
 		/>
 	);
 }
