@@ -11,6 +11,7 @@ import "./Modal.css";
 import * as React from "react";
 import { ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { getLocal } from "src/i18/messages";
 
 function PortalImpl({
 	onClose,
@@ -93,7 +94,7 @@ function PortalImpl({
 				<h2 className="Modal__title">{title}</h2>
 				<button
 					className="Modal__closeButton"
-					aria-label="Close modal"
+					aria-label={getLocal().MODAL_CLOSE}
 					type="button"
 					onClick={onClose}
 				>

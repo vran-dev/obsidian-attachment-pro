@@ -44,7 +44,10 @@ export class AttachmentRepositories {
 				"[No Repository Match] no repository found for rule: ",
 				rule.repository
 			);
-			return;
+			// 抛错交由上层统一 Notice，避免附件被静默丢弃
+			throw new Error(
+				`no repository matched type "${rule.repository.type}"`
+			);
 		}
 
 		log(

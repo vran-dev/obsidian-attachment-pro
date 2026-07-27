@@ -53,4 +53,20 @@ export default class EnLocalMessage implements Message {
 	SHOW_ATTACHMENTS = "Show attachments";
 	CONTEXT_MENU_INSERT_ATTACHMENTS = "Insert from attachments";
 	INSERT_SELECTED_ATTACHMENTS = "Insert selected attachments";
+
+	// attachments modal
+	ATTACHMENTS_LOADING = "Loading attachments...";
+	ATTACHMENTS_EMPTY_TITLE = "No attachments found";
+	ATTACHMENTS_EMPTY_DESC =
+		"Try adjusting the filters, or add attachments to your vault first.";
+	ATTACHMENTS_FILTER_IMAGES_ALL = "Images(All)";
+	ATTACHMENTS_SEARCH_PLACEHOLDER = "Search by name";
+	ATTACHMENTS_ONLY_UNUSED = "Only Unused";
+	ATTACHMENTS_PREVIEW_UNSUPPORTED = "Can't preview this file type";
+	PAGINATION_PREV = "Prev";
+	PAGINATION_NEXT = "Next";
+	MODAL_CLOSE = "Close";
+
+	// error feedback
+	ATTACHMENT_SAVE_FAILED_NOTICE = "Attachment Pro: failed to save attachment";
 }

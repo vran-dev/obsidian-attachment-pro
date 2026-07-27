@@ -20,23 +20,27 @@ declare module "obsidian" {
 export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
 
+	private canvasPasteOrDropHandler: CanvasPasteOrDropHandler | null = null;
+
 	async onload() {
 		try {
 			await this.loadSettings();
 			this.registerEditorPasteHandler();
 			this.registerEditorDropHandler();
 			this.registerFileRenameHandler();
-			// TODO
-			// this.registerCanvasPasteOrDropHandler();
+			this.registerCanvasPasteOrDropHandler();
 			this.registerCommands();
 			this.registerContextMenu();
 			this.addSettingTab(new ReactAttachmentSettingTab(this.app, this));
 		} catch (e) {
-			new Notice('error when load plugin "Attachment Pro"' + e.message);
+			const reason = e instanceof Error ? e.message : String(e);
+			new Notice('error when load plugin "Attachment Pro": ' + reason);
 		}
 	}
 
-	onunload() { }
+	onunload() {
+		this.resetCanvasPasteOrDropHandler();
+	}
 
 	async loadSettings() {
 		const merged = Object.assign(
@@ -89,17 +93,27 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	registerCanvasPasteOrDropHandler() {
-		this.app.workspace.on("active-leaf-change", (leaf) => {
-			if (!leaf) {
-				return;
-			}
-			const view = leaf.view;
-			if (view.getViewType() === "canvas") {
-				new CanvasPasteOrDropHandler(view as CanvasView).install(
-					this.settings
-				);
-			}
-		});
+		this.registerEvent(
+			this.app.workspace.on("active-leaf-change", (leaf) => {
+				// 离开 Canvas（或切到另一个 Canvas）时先恢复上一个视图的原始 handlePaste，
+				// 避免补丁重复安装与监听器泄漏
+				this.resetCanvasPasteOrDropHandler();
+				if (!leaf) {
+					return;
+				}
+				const view = leaf.view;
+				if (view.getViewType() === "canvas") {
+					this.canvasPasteOrDropHandler =
+						new CanvasPasteOrDropHandler(view as CanvasView);
+					this.canvasPasteOrDropHandler.install(this);
+				}
+			})
+		);
+	}
+
+	private resetCanvasPasteOrDropHandler() {
+		this.canvasPasteOrDropHandler?.reset();
+		this.canvasPasteOrDropHandler = null;
 	}
 
 	registerFileRenameHandler() {

@@ -643,14 +643,3 @@
 .attachmentsPro--Header .attachmentsPro--SelectionCount {
   margin-left: auto;
 }
-
-/* ===== DRAG AND DROP STYLING ===== */
-.attachmentsPro--Item.dragging {
-  opacity: 0.5;
-  transform: rotate(5deg) scale(0.95);
-}
-
-.attachmentsPro--Content.drag-over {
-  background-color: var(--background-modifier-hover);
-  border: 2px dashed var(--interactive-accent);
-}

@@ -1,6 +1,6 @@
 import { CanvasView } from "obsidian";
-import { AttachmentProConfig } from "src/manager/types";
 import AttachmentManager from "src/manager/attachmentManager";
+import AttachmentProPlugin from "src/main";
 import { isAllStringType } from "src/util/dataTransfers";
 
 export default class CanvasPasteOrDropHandler {
@@ -19,7 +19,11 @@ export default class CanvasPasteOrDropHandler {
 		this.canvasView.handlePaste = this.originalHandlePasteFn;
 	}
 
-	install(config: AttachmentProConfig) {
+	install(plugin: AttachmentProPlugin) {
+		// 原始 handlePaste 必须以 canvasView 为 this 调用
+		const invokeOriginal = (evt: ClipboardEvent) =>
+			this.originalHandlePasteFn.call(this.canvasView, evt);
+
 		this.canvasView.handlePaste = async (evt: ClipboardEvent) => {
 			const dataItems = this.getDataTransferItem(evt);
 			if (!dataItems) {
@@ -44,7 +48,7 @@ export default class CanvasPasteOrDropHandler {
 					}
 					this.attachmentManager.onAttachmentSave(
 						pageFile,
-						config,
+						plugin.settings,
 						this.canvasView.app,
 						attachmentFile,
 						index,
@@ -57,10 +61,10 @@ export default class CanvasPasteOrDropHandler {
 								file: result.file,
 							});
 						},
-						() => this.originalHandlePasteFn(evt)
+						() => invokeOriginal(evt)
 					);
 				} else {
-					this.originalHandlePasteFn(evt);
+					invokeOriginal(evt);
 				}
 			}
 		};
