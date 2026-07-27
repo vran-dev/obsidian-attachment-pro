@@ -22,7 +22,7 @@ export default class ZhLocalMessage implements Message {
 
 	SCOPE_TAG_VALUE_INPUT_PLACEHOLDER = "请输入标签, 按下回车或空格确定";
 	SCOPE_EXTENSION_VALUE_INPUT_PLACEHOLDER = "请输入文件类型的后缀，比如 png. 按下回车或空格确定";
-	SCOPE_SPCIFIC_FOLDER_INPUT_PLACEHOLDER = "请填写目录路径，按下回车确定";
+	SCOPE_SPECIFIC_FOLDER_INPUT_PLACEHOLDER = "请填写目录路径，按下回车确定";
 
 	// file name format
 	FILE_NAME_FORMAT_LABEL = "文件名格式化";

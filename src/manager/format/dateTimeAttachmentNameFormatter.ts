@@ -22,17 +22,13 @@ export class DateTimeAttachmentNameFormatter
 	): string {
 		const fileExtension = attachmentFile.name.split(".").pop();
 
-		let formatedName;
-		if (format.format) {
-			formatedName = DateTime.now().toFormat(format.format);
-		} else {
-			formatedName = DateTime.now().toFormat(DEFAULT_DATETIME_FORMAT);
-		}
+		const pattern = format.format || DEFAULT_DATETIME_FORMAT;
+		const formattedName = DateTime.now().toFormat(pattern);
 
 		if (fileExtension && fileExtension.trim().length > 0) {
-			return `${formatedName}.${fileExtension}`;
+			return `${formattedName}.${fileExtension}`;
 		} else {
-			return `${formatedName}`;
+			return `${formattedName}`;
 		}
 	}
 }

@@ -19,7 +19,7 @@ export class CustomizeAttachmentNameFormatter implements AttachmentNameFormatter
 		index?: number
 	): string {
 		const fileExtension = attachmentFile.name.split(".").pop();
-		const value = format.format
+		const value = format.format ?? "";
 		const filename = DefaultVariableHandler.handle(value, app, pageFile, attachmentFile);
 		if (fileExtension && fileExtension.trim().length > 0) {
 			if (index && index > 0)
