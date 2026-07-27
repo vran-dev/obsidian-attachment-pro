@@ -16,8 +16,10 @@ export default class SpecificFileFolderAttachmentScopeMatcher
 		scope: AttachmentScope,
 		app: App
 	): boolean {
+		if (scope.type !== "SPECIFIC_FILE_FOLDER") {
+			return false;
+		}
 		const filePath = page.path;
-		// @ts-ignore
 		const folders = scope.ranges.map((f) => f.value);
 		log(
 			"[Scope | Specific Folder] folders: " + folders.join(","),

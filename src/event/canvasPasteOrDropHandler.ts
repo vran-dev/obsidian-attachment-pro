@@ -53,7 +53,6 @@ export default class CanvasPasteOrDropHandler {
 						attachmentFile,
 						index,
 						(result) => {
-							// @ts-ignore
 							const canvas = this.canvasView.canvas;
 							canvas.createFileNode({
 								pos: canvas.posCenter(),
@@ -72,26 +71,9 @@ export default class CanvasPasteOrDropHandler {
 
 	getDataTransferItem(evt: DragEvent | ClipboardEvent) {
 		if (evt instanceof DragEvent) {
-			const dataTransfer = evt.dataTransfer;
-			if (dataTransfer == null) {
-				return null;
-			}
-			dataTransfer.setData;
-			return dataTransfer.items;
+			return evt.dataTransfer?.items ?? null;
 		} else {
-			const clipBoardData = evt.clipboardData;
-			if (clipBoardData == null) {
-				return null;
-			}
-			return clipBoardData.items;
-		}
-	}
-
-	getDataTransfer(evt: DragEvent | ClipboardEvent) {
-		if (evt instanceof DragEvent) {
-			return evt.dataTransfer;
-		} else {
-			return evt.clipboardData;
+			return evt.clipboardData?.items ?? null;
 		}
 	}
 }

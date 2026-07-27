@@ -9,7 +9,7 @@ export default class EnLocalMessage implements Message {
 	FILE_POSITION_TYPE_ROOT = "Vault folder";
 	FILE_POSITION_TYPE_CURRENT = "Same folder as current file";
 	FILE_POSITION_TYPE_SUBFOLDER = "In subfolder under current folder";
-	FILE_POSITION_TYPE_CUSTOM = "In the folder spcified below";
+	FILE_POSITION_TYPE_CUSTOM = "In the folder specified below";
 
 	SCOPE_LABEL = "Scope";
 	SCOPE_DESC = "The scope in which the rule takes effect";
@@ -22,7 +22,7 @@ export default class EnLocalMessage implements Message {
 	SCOPE_TAG_VALUE_INPUT_PLACEHOLDER = "Please enter the tag, such as todo. then press Enter";
 	SCOPE_EXTENSION_VALUE_INPUT_PLACEHOLDER =
 		"Please enter the file type suffix, such as png. then press Enter";
-	SCOPE_SPCIFIC_FOLDER_INPUT_PLACEHOLDER = "Please enter the folder path, such as /images";
+	SCOPE_SPECIFIC_FOLDER_INPUT_PLACEHOLDER = "Please enter the folder path, such as /images";
 	// file name format
 	FILE_NAME_FORMAT_LABEL = "File Name Format";
 	FILE_NAME_FORMAT_DESC = "Automatically convert the file name to the specified format";

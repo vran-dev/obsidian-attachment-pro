@@ -1,35 +1,27 @@
 import { AttachmentSaveType } from "src/manager/types";
-import {
-	AttachmentRepositoryContext,
-	AttachmentRepository,
-	AttachmentResult,
-} from "./attachmentSaveRepository";
 import PathResolver from "../path/pathResolver";
-import { appendOrderIfConflict } from "src/util/file";
-import { generateAttachmentLink } from "src/util/linkGenerator";
+import { AttachmentRepositoryContext } from "./attachmentSaveRepository";
+import { BaseAttachmentRepository } from "./baseAttachmentRepository";
 
-export default class CustomizeAttachmentRepository
-	implements AttachmentRepository
-{
-	accept(scope: AttachmentSaveType): boolean {
-		return scope == "CUSTOMIZE";
+export default class CustomizeAttachmentRepository extends BaseAttachmentRepository {
+	accept(type: AttachmentSaveType): boolean {
+		return type === "CUSTOMIZE";
 	}
 
-	async save(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
-		const buffer = await context.attachmentFile.arrayBuffer();
-		const resolver = new PathResolver();
-		const fullPath = await resolver.resolveFullPathFromRoot(
-			context.formatedAttachmentName,
+	protected resolvePath(
+		context: AttachmentRepositoryContext
+	): Promise<string> {
+		const { repository } = context.rule;
+		if (repository.type !== "CUSTOMIZE") {
+			throw new Error(
+				`CustomizeAttachmentRepository cannot handle repository type "${repository.type}"`
+			);
+		}
+		return new PathResolver().resolveFullPathFromRoot(
+			context.formattedAttachmentName,
 			context.pageFile,
-			context.rule,
+			repository.path,
 			context.app
 		);
-		const filePath = appendOrderIfConflict(fullPath, context.app);
-		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const link = generateAttachmentLink(tFile, context.app);
-		return {
-			file: tFile,
-			link: link
-		}
 	}
 }

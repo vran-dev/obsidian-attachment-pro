@@ -1,20 +1,33 @@
-import { normalizePath } from "obsidian";
-import {
-	createFolderIfNotExist,
-	joinAndAppendOrderIfConflict,
-	joinFolder,
-} from "src/util/file";
+import { Vault, normalizePath } from "obsidian";
+import { AttachmentSaveType } from "src/manager/types";
+import { createFolderIfNotExist, joinFile, joinFolder } from "src/util/file";
 import { log } from "src/util/log";
-import { AttachmentRepositoryContext, AttachmentResult } from "./attachmentSaveRepository";
-import { generateAttachmentLink } from "src/util/linkGenerator";
+import { AttachmentRepositoryContext } from "./attachmentSaveRepository";
+import { BaseAttachmentRepository } from "./baseAttachmentRepository";
 
-export default class ObsidianAttachmentRepository {
-	async handle(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
-		log("[Repository | Obsidian] use obsidian attachment repository to save attachment");
-		// resolve and create folder
+/** Obsidian 未在公开 API 中暴露 vault.config，这里只声明用到的字段 */
+type VaultWithConfig = Vault & {
+	config?: { attachmentFolderPath?: string };
+};
+
+/**
+ * 兜底仓库：附件存入 Obsidian 原生「附件默认存放位置」配置的目录。
+ * 与其他仓库同样注册在 attachmentRepositories 中，type 为 OBSIDIAN_DEFAULT。
+ */
+export default class ObsidianAttachmentRepository extends BaseAttachmentRepository {
+	accept(type: AttachmentSaveType): boolean {
+		return type === "OBSIDIAN_DEFAULT";
+	}
+
+	protected async resolvePath(
+		context: AttachmentRepositoryContext
+	): Promise<string> {
+		log(
+			"[Repository | Obsidian] use obsidian attachment repository to save attachment"
+		);
+		const vault = context.app.vault as VaultWithConfig;
 		const obsidianAttachmentFolder = normalizePath(
-			//@ts-ignore
-			context.app.vault.config["attachmentFolderPath"]
+			vault.config?.attachmentFolderPath ?? ""
 		);
 		const joinedFolder = joinFolder(
 			obsidianAttachmentFolder,
@@ -23,23 +36,6 @@ export default class ObsidianAttachmentRepository {
 		const normalizedFolderPath = normalizePath(joinedFolder);
 		await createFolderIfNotExist(normalizedFolderPath, context.app);
 
-		// resolve file path and create file
-		const filePath = joinAndAppendOrderIfConflict(
-			normalizedFolderPath,
-			context.attachmentFile.name,
-			context.app
-		);
-		const fileBuffer = await context.attachmentFile.arrayBuffer();
-		const tFile = await context.app.vault.createBinary(
-			filePath,
-			fileBuffer
-		);
-
-		// generate and append markdown link using the same logic as AttachmentView
-		const link = generateAttachmentLink(tFile, context.app);
-		return {
-			file: tFile,
-			link: link,
-		};
+		return joinFile(normalizedFolderPath, context.formattedAttachmentName);
 	}
 }

@@ -22,6 +22,14 @@ export class AttachmentsModal extends Modal {
 	}
 
 	async onOpen(): Promise<void> {
+		// Obsidian 1.13 起设置页可以是独立窗口，此时 Modal 默认挂在
+		// activeDocument（可能是设置窗口）上；附件库操作的是主窗口的
+		// 工作区与编辑器，这里强制把弹窗挂回主窗口并聚焦
+		const workspaceDoc = this.app.workspace.containerEl.doc;
+		if (this.containerEl.doc !== workspaceDoc) {
+			workspaceDoc.body.appendChild(this.containerEl);
+			workspaceDoc.win.focus();
+		}
 		const el = this.contentEl;
 		this.modalEl.addClass("attachmentsPro--modal");
 		this.root = createRoot(el);

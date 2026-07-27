@@ -6,7 +6,7 @@ import {
 } from "src/manager/types";
 import { DateTimeAttachmentNameFormatter } from "./dateTimeAttachmentNameFormatter";
 import { UuidAttachmentNameFormatter } from "./uuidAttachmentNameFormatter";
-import { OriginalAttachmentNameFormatter } from "./originalAttachmentNameFormatter copy";
+import { OriginalAttachmentNameFormatter } from "./originalAttachmentNameFormatter";
 import { log } from "src/util/log";
 import { CustomizeAttachmentNameFormatter } from "./customizeAttachmentNameFormatter";
 

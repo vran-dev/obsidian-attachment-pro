@@ -1,36 +1,27 @@
 import { AttachmentSaveType } from "src/manager/types";
-import {
-	AttachmentRepositoryContext,
-	AttachmentRepository,
-	AttachmentResult,
-} from "./attachmentSaveRepository";
 import PathResolver from "../path/pathResolver";
-import { appendOrderIfConflict } from "src/util/file";
-import { generateAttachmentLink } from "src/util/linkGenerator";
+import { AttachmentRepositoryContext } from "./attachmentSaveRepository";
+import { BaseAttachmentRepository } from "./baseAttachmentRepository";
 
-export default class FileSubfolderAttachmentRepository
-	implements AttachmentRepository
-{
-	accept(scope: AttachmentSaveType): boolean {
-		return scope == "FILE_SUBFOLDER";
+export default class FileSubfolderAttachmentRepository extends BaseAttachmentRepository {
+	accept(type: AttachmentSaveType): boolean {
+		return type === "FILE_SUBFOLDER";
 	}
 
-	async save(context: AttachmentRepositoryContext): Promise<AttachmentResult> {
-		const buffer = await context.attachmentFile.arrayBuffer();
-		const resolver = new PathResolver();
-		const fullPath = await resolver.resolveFullPathFromPageDir(
-			context.formatedAttachmentName,
+	protected resolvePath(
+		context: AttachmentRepositoryContext
+	): Promise<string> {
+		const { repository } = context.rule;
+		if (repository.type !== "FILE_SUBFOLDER") {
+			throw new Error(
+				`FileSubfolderAttachmentRepository cannot handle repository type "${repository.type}"`
+			);
+		}
+		return new PathResolver().resolveFullPathFromPageDir(
+			context.formattedAttachmentName,
 			context.pageFile,
-			context.rule,
+			repository.path,
 			context.app
 		);
-		const filePath = appendOrderIfConflict(fullPath, context.app);
-		const tFile = await context.app.vault.createBinary(filePath, buffer);
-		const link = generateAttachmentLink(tFile, context.app);
-
-		return {
-			file: tFile,
-			link: link,
-		};
 	}
 }

@@ -24,18 +24,18 @@ export default class EditorPasteOrDropHandler {
 	): boolean {
 		const dataItems = this.getDataTransferItem(evt);
 		if (!dataItems) {
-			log("[Event] ignoresd no data items");
+			log("[Event] ignored no data items");
 			return false;
 		}
 
 		if (isAllStringType(dataItems)) {
-			log("[Event] ignoresd all is string type");
+			log("[Event] ignored all is string type");
 			return false;
 		}
 
 		const pageFile = info.file;
 		if (!pageFile) {
-			log("[Event] ignoresd no active page file");
+			log("[Event] ignored no active page file");
 			return false;
 		}
 
@@ -62,26 +62,9 @@ export default class EditorPasteOrDropHandler {
 
 	getDataTransferItem(evt: DragEvent | ClipboardEvent) {
 		if (evt instanceof DragEvent) {
-			const dataTransfer = evt.dataTransfer;
-			if (dataTransfer == null) {
-				return null;
-			}
-			dataTransfer.setData;
-			return dataTransfer.items;
+			return evt.dataTransfer?.items ?? null;
 		} else {
-			const clipBoardData = evt.clipboardData;
-			if (clipBoardData == null) {
-				return null;
-			}
-			return clipBoardData.items;
-		}
-	}
-
-	getDataTransfer(evt: DragEvent | ClipboardEvent) {
-		if (evt instanceof DragEvent) {
-			return evt.dataTransfer;
-		} else {
-			return evt.clipboardData;
+			return evt.clipboardData?.items ?? null;
 		}
 	}
 

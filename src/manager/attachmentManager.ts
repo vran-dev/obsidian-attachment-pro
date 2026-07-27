@@ -1,9 +1,8 @@
 import { TFile, App, Editor, Notice } from "obsidian";
-import { AttachmentProConfig, DefaultRule } from "./types";
+import { AttachmentProConfig, createFallbackRule } from "./types";
 import { AttachmentScopeMatchers } from "./scope/attachmentScopeMatcher";
 import { AttachmentRepositories, AttachmentResult } from "./repository/attachmentSaveRepository";
 import { log } from "../util/log";
-import ObsidianAttachmentRepository from "./repository/obsidianAttachmentRepository";
 import { AttachmentNameFormatters } from "./format/attachmentNameFormatter";
 import { getLocal } from "../i18/messages";
 
@@ -71,7 +70,7 @@ export default class AttachmentManager {
 					await AttachmentRepositories.handle(
 						{
 							attachmentFile,
-							formatedAttachmentName: attachmentFileName,
+							formattedAttachmentName: attachmentFileName,
 							pageFile: page,
 							rule,
 							app,
@@ -97,22 +96,24 @@ export default class AttachmentManager {
 		attachmentFile: File,
 		onSave: (link: AttachmentResult) => void
 	): Promise<void> {
-		// fallback to default repository
-		const rule = new DefaultRule();
+		// 兜底规则（OBSIDIAN_DEFAULT）与常规规则走同一套仓库注册表
+		const rule = createFallbackRule();
 		const formattedName = AttachmentNameFormatters.format(
 			attachmentFile,
 			page,
 			rule,
 			app
 		);
-		const attachment = await new ObsidianAttachmentRepository().handle({
-			attachmentFile,
-			formatedAttachmentName: formattedName,
-			pageFile: page,
-			rule: rule,
-			app,
-		});
-		onSave(attachment);
+		await AttachmentRepositories.handle(
+			{
+				attachmentFile,
+				formattedAttachmentName: formattedName,
+				pageFile: page,
+				rule,
+				app,
+			},
+			onSave
+		);
 	}
 
 	private notifySaveFailure(attachmentName: string, e: unknown) {
