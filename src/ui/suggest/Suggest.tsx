@@ -124,7 +124,7 @@ export function Suggest(props: {
 			{showSuggest && items.length > 0 && (
 				<div
 					className="suggest-container"
-					ref={refs.setFloating}
+					ref={(node) => refs.setFloating(node)}
 					style={{
 						...floatingStyles,
 					}}

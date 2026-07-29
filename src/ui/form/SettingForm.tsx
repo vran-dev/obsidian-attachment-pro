@@ -154,7 +154,7 @@ export function SettingForm(props: {
 			{showTooltip && (
 				<>
 					<div
-						ref={refs.setFloating}
+						ref={(node) => refs.setFloating(node)}
 						className="tooltip"
 						style={{
 							...floatingStyles,
