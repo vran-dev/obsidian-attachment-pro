@@ -1,5 +1,5 @@
 import { App, MarkdownView, TFile } from "obsidian";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
 import { File } from "lucide-react";
@@ -299,7 +299,7 @@ export default function AttachmentView({
 }: {
 	canInsert?: boolean,
 	onClose: () => void;
-}): JSX.Element {
+}): ReactNode {
 	const app = useObsidianApp();
 	const local = getLocal();
 	const [attachments, setAttachments] = useState<TFile[]>();

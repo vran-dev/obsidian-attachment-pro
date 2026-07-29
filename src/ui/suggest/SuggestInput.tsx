@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CSSProperties } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { getLocal } from "src/i18/messages";
 import { Suggest, SuggestItem } from "./Suggest";
 
@@ -10,7 +10,7 @@ export function SuggestInput(props: {
 	getItems: (query: string) => SuggestItem[];
 	defaultInputValue?: string;
 	style?: CSSProperties;
-}): JSX.Element {
+}): ReactNode {
 	const { inputPlaceholder } = props;
 	const [value, setValue] = React.useState(props.defaultInputValue);
 	const [showSuggest, setShowSuggest] = React.useState(false);

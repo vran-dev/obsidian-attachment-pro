@@ -14,7 +14,7 @@ export function InputTags(props: {
 	getItems?: (query: string) => SuggestItem[];
 	inputPlaceholder?: string;
 	excludeTriggerKeys?: string[];
-}): JSX.Element {
+}): ReactNode {
 	const [value, setValue] = useState("");
 	const [hasSelected, setHasSelected] = useState(false);
 	const [showSuggest, setShowSuggest] = useState(false);

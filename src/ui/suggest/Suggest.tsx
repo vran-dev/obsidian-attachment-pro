@@ -12,7 +12,7 @@ import {
 } from "@floating-ui/react";
 import { debounce } from "obsidian";
 import * as React from "react";
-import { CSSProperties, useEffect, useLayoutEffect } from "react";
+import { CSSProperties, ReactNode, useEffect, useLayoutEffect } from "react";
 
 export function Suggest(props: {
 	query: string;
@@ -23,7 +23,7 @@ export function Suggest(props: {
 	anchorElement: Element;
 	onSelectChange?: (item: SuggestItem | null, index: number) => void;
 	style?: CSSProperties;
-}): JSX.Element {
+}): ReactNode {
 	const { query, onOpenChange, anchorElement, showSuggest } = props;
 	const [activeIndex, setActiveIndex] = React.useState<number>(-1);
 	const [items, setItems] = React.useState<SuggestItem[]>([]);

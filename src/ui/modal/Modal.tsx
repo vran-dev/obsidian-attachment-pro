@@ -25,7 +25,7 @@ function PortalImpl({
 	onClose: () => void;
 	title: string;
 	modalContentSize: "auto" | "max";
-}): JSX.Element {
+}): ReactNode {
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -120,7 +120,7 @@ export default function Modal({
 	title: string;
 	modalContentSize?: "auto" | "max";
 	container?: HTMLElement;
-}): JSX.Element {
+}): ReactNode {
 	// 如果提供了容器，使用 createPortal 渲染到该容器
 	// 否则直接返回组件（不使用 Portal）
 	if (container) {
