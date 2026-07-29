@@ -15,7 +15,7 @@ export default class AttachmentManager {
 		attachmentFile: File,
 		index: number
 	) {
-		this.onAttachmentSave(
+		void this.onAttachmentSave(
 			page,
 			config,
 			app,

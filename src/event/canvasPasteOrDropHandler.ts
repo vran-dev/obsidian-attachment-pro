@@ -46,7 +46,7 @@ export default class CanvasPasteOrDropHandler {
 					if (!attachmentFile) {
 						continue;
 					}
-					this.attachmentManager.onAttachmentSave(
+					void this.attachmentManager.onAttachmentSave(
 						pageFile,
 						plugin.settings,
 						this.canvasView.app,

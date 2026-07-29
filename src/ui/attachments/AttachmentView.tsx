@@ -239,7 +239,7 @@ function Content(props: {
 							rel="noopener"
 							onClick={(e) => {
 								e.preventDefault();
-								app.workspace.openLinkText(attachment.name, attachment.path, true, { active: true });
+								void app.workspace.openLinkText(attachment.name, attachment.path, true, { active: true });
 							}}
 						>
 							{attachment.name}
@@ -361,7 +361,7 @@ export default function AttachmentView({
 	);
 
 	useEffect(() => {
-		listAttachments(filter.unused);
+		void listAttachments(filter.unused);
 	}, [filter.unused, listAttachments]);
 
 	// 任何筛选条件变化都回到第一页，避免停留在已不存在的页码上
