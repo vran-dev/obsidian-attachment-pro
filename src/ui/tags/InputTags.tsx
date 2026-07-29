@@ -47,7 +47,8 @@ export function InputTags(props: {
 			const value = inputRef.current?.value;
 			if (value) {
 				appendTag(value);
-				inputRef.current!.value = "";
+				const el = inputRef.current;
+				if (el) { el.value = ""; }
 			}
 		}
 	};
