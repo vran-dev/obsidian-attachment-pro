@@ -4,7 +4,7 @@ import { AttachmentScopeMatchers } from "./scope/attachmentScopeMatcher";
 import { AttachmentRepositories, AttachmentResult } from "./repository/attachmentSaveRepository";
 import { log } from "../util/log";
 import { AttachmentNameFormatters } from "./format/attachmentNameFormatter";
-import { getLocal } from "../i18/messages";
+import { LL } from "@src/i18n/i18n";
 
 export default class AttachmentManager {
 	onEditorAttachmentSave(
@@ -120,7 +120,7 @@ export default class AttachmentManager {
 		const reason = e instanceof Error ? e.message : String(e);
 		log("[Attachment Save Failed] ", attachmentName, e);
 		new Notice(
-			`${getLocal().ATTACHMENT_SAVE_FAILED_NOTICE}: ${attachmentName} (${reason})`
+			`${LL.NOTICES.SAVE_FAILED()}: ${attachmentName} (${reason})`
 		);
 	}
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CSSProperties, ReactNode } from "react";
-import { getLocal } from "src/i18/messages";
+import { LL } from "@src/i18n/i18n";
 import { Suggest, SuggestItem } from "./Suggest";
 
 export function SuggestInput(props: {
@@ -15,7 +15,7 @@ export function SuggestInput(props: {
 	const [value, setValue] = React.useState(props.defaultInputValue);
 	const [showSuggest, setShowSuggest] = React.useState(false);
 	const inputRef = React.useRef<HTMLInputElement>(null);
-	const local = getLocal();
+
 	return (
 		<>
 			<input
@@ -23,7 +23,7 @@ export function SuggestInput(props: {
 				placeholder={
 					inputPlaceholder
 						? inputPlaceholder
-						: local.FILE_POSITION_PATH_INPUT_PLACEHOLDER
+						: LL.FILE_POSITION.PATH_INPUT_PLACEHOLDER()
 				}
 				ref={inputRef}
 				onChange={(e) => {

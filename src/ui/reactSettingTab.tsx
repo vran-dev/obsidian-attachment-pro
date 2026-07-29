@@ -3,7 +3,7 @@ import AttachmentProPlugin from "src/main";
 import { Root, createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { SettingForm } from "./form/SettingForm";
-import { getLocal } from "src/i18/messages";
+import { LL } from "@src/i18n/i18n";
 import { ObsidianAppContext } from "src/context/obsidianAppContext";
 import {
 	AttachmentNameFormatType,
@@ -51,67 +51,67 @@ export default class ReactAttachmentSettingTab extends PluginSettingTab {
 export const repositoryOptions: SelectOption<AttachmentSaveType>[] = [
 	{
 		value: "ROOT_FOLDER",
-		label: getLocal().FILE_POSITION_TYPE_ROOT,
+		label: LL.FILE_POSITION.TYPE.ROOT(),
 	},
 	{
 		value: "FILE_FOLDER",
-		label: getLocal().FILE_POSITION_TYPE_CURRENT,
+		label: LL.FILE_POSITION.TYPE.CURRENT(),
 	},
 	{
 		value: "FILE_SUBFOLDER",
-		label: getLocal().FILE_POSITION_TYPE_SUBFOLDER,
+		label: LL.FILE_POSITION.TYPE.SUBFOLDER(),
 	},
 	{
 		value: "CUSTOMIZE",
-		label: getLocal().SCOPE_TYPE_CUSTOM,
+		label: LL.SCOPE.TYPE.CUSTOM(),
 	},
 ];
 
 export const scopeOptions: SelectOption<AttachmentScopeType>[] = [
 	{
 		value: "ALL",
-		label: getLocal().SCOPE_TYPE_ALL,
+		label: LL.SCOPE.TYPE.ALL(),
 	},
 	{
 		value: "ATTACHMENT_FILE_EXTENSION",
-		label: getLocal().SCOPE_TYPE_SPECIFIC_EXTENSION,
+		label: LL.SCOPE.TYPE.SPECIFIC_EXTENSION(),
 	},
 	{
 		value: "FILE_TAG",
-		label: getLocal().SCOPE_TYPE_TAG_OPS,
+		label: LL.SCOPE.TYPE.TAG_OPS(),
 	},
 	{
 		value: "SPECIFIC_FILE_FOLDER",
-		label: getLocal().SCOPE_TYPE_SPECIFIC_FOLDER,
+		label: LL.SCOPE.TYPE.SPECIFIC_FOLDER(),
 	},
 ];
 
 export const attachmentNameFormatOptions: SelectOption<AttachmentNameFormatType>[] = [
 	{
 		value: "ORIGINAL",
-		label: getLocal().FILE_NAME_FORMAT_TYPE_ORIGINAL,
+		label: LL.FILE_NAME_FORMAT.TYPE.ORIGINAL(),
 	},
 	{
 		value: "DATETIME",
-		label: getLocal().FILE_NAME_FORMAT_TYPE_DATETIME,
+		label: LL.FILE_NAME_FORMAT.TYPE.DATETIME(),
 	},
 	{
 		value: "UUID",
-		label: getLocal().FILE_NAME_FORMAT_TYPE_UUID,
+		label: LL.FILE_NAME_FORMAT.TYPE.UUID(),
 	},
 	{
 		value: "CUSTOMIZE",
-		label: getLocal().FILE_NAME_FORMAT_TYPE_CUSTOM,
+		label: LL.FILE_NAME_FORMAT.TYPE.CUSTOM(),
 	},
 ];
 
 export const operationOptions: SelectOption<TagMatchOperator>[] = [
 	{
 		value: "CONTAINS_ALL",
-		label: getLocal().OPERATOR_CONTAINS_ALL,
+		label: LL.SETTING.OPERATOR_CONTAINS_ALL(),
 	},
 	{
 		value: "CONTAINS_ANY",
-		label: getLocal().OPERATOR_CONTAINS_ANY,
+		label: LL.SETTING.OPERATOR_CONTAINS_ANY(),
 	},
 ];

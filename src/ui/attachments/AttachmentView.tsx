@@ -4,7 +4,7 @@ import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
 import { File } from "lucide-react";
 import Select, { MultiValue } from "react-select";
-import { getLocal, Message } from "../../i18/messages";
+import { LL } from "@src/i18n/i18n";
 import Modal from "../modal/Modal";
 import { generateAttachmentLink } from "src/util/linkGenerator";
 import { IMAGE_EXTENSIONS } from "src/manager/constants";
@@ -36,17 +36,16 @@ const ALL_IMAGES_VALUE = "AllImages";
 // 内部状态丢失与整棵子树重挂载（P2-3）。依赖一律通过 props 显式传入 ----
 
 function Header(props: {
-	local: Message;
 	filter: AttachmentFilter;
 	pageSize: number;
 	attachmentExtensions: string[];
 	onFilterChange: (filter: AttachmentFilter) => void;
 	onPageSizeChange: (pageSize: number) => void;
 }) {
-	const { local, filter, pageSize, attachmentExtensions } = props;
+	const { filter, pageSize, attachmentExtensions } = props;
 	const allImageOption: Option = {
 		value: ALL_IMAGES_VALUE,
-		label: local.ATTACHMENTS_FILTER_IMAGES_ALL,
+		label: LL.ATTACHMENTS.FILTER_IMAGES_ALL(),
 	};
 
 	return (
@@ -96,7 +95,7 @@ function Header(props: {
 							name: e.target.value,
 						});
 					}}
-					placeholder={local.ATTACHMENTS_SEARCH_PLACEHOLDER}
+					placeholder={LL.ATTACHMENTS.SEARCH_PLACEHOLDER()}
 				/>
 				<Select
 					name="pageSize"
@@ -124,7 +123,7 @@ function Header(props: {
 							});
 						}}
 					/>
-					{local.ATTACHMENTS_ONLY_UNUSED}
+					{LL.ATTACHMENTS.ONLY_UNUSED()}
 				</label>
 			</div>
 		</div>
@@ -133,12 +132,11 @@ function Header(props: {
 
 function PreviewModal(props: {
 	app: App;
-	local: Message;
 	selectedFile: TFile;
 	selectedFileType: string;
 	onClose: () => void;
 }) {
-	const { app, local, selectedFile, selectedFileType } = props;
+	const { app, selectedFile, selectedFileType } = props;
 
 	const renderPreview = () => {
 		if (supportPreviewExtensions.includes(selectedFileType)) {
@@ -155,7 +153,7 @@ function PreviewModal(props: {
 				);
 			}
 		} else {
-			return <div>{local.ATTACHMENTS_PREVIEW_UNSUPPORTED}</div>;
+			return <div>{LL.ATTACHMENTS.PREVIEW_UNSUPPORTED()}</div>;
 		}
 	};
 
@@ -252,7 +250,6 @@ function Content(props: {
 }
 
 function Pagination(props: {
-	local: Message;
 	page: number;
 	totalPages: number;
 	onPageChange: (page: number) => void;
@@ -260,7 +257,7 @@ function Pagination(props: {
 	selectedCount: number;
 	onInsert: () => void;
 }) {
-	const { local, page, totalPages, canInsert, selectedCount } = props;
+	const { page, totalPages, canInsert, selectedCount } = props;
 	return (
 		<div className="attachmentsPro--Pagination">
 			<div className="attachmentsPro--PaginationButtons">
@@ -268,7 +265,7 @@ function Pagination(props: {
 					onClick={() => props.onPageChange(Math.max(1, page - 1))}
 					disabled={page === 1}
 				>
-					{local.PAGINATION_PREV}
+					{LL.ATTACHMENTS.PAGINATION_PREV()}
 				</button>
 				<span>
 					{page} / {totalPages}
@@ -279,13 +276,13 @@ function Pagination(props: {
 					}
 					disabled={page === totalPages}
 				>
-					{local.PAGINATION_NEXT}
+					{LL.ATTACHMENTS.PAGINATION_NEXT()}
 				</button>
 			</div>
 			{canInsert && selectedCount > 0 && (
 				<div className="attachmentsPro--InsertButton">
 					<button onClick={props.onInsert}>
-						{local.INSERT_SELECTED_ATTACHMENTS} ({selectedCount})
+						{LL.ATTACHMENTS.INSERT_SELECTED_ATTACHMENTS()} ({selectedCount})
 					</button>
 				</div>
 			)}
@@ -301,7 +298,6 @@ export default function AttachmentView({
 	onClose: () => void;
 }): ReactNode {
 	const app = useObsidianApp();
-	const local = getLocal();
 	const [attachments, setAttachments] = useState<TFile[]>();
 	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(1);
@@ -405,7 +401,6 @@ export default function AttachmentView({
 	return (
 		<div className="attachmentsPro--ViewContainer">
 			<Header
-				local={local}
 				filter={filter}
 				pageSize={pageSize}
 				attachmentExtensions={attachmentExtensions}
@@ -414,12 +409,12 @@ export default function AttachmentView({
 			/>
 			{loading ? (
 				<div className="attachmentsPro--LoadingState">
-					{local.ATTACHMENTS_LOADING}
+					{LL.ATTACHMENTS.LOADING()}
 				</div>
 			) : filteredAttachments.length === 0 ? (
 				<div className="attachmentsPro--EmptyState">
-					<h3>{local.ATTACHMENTS_EMPTY_TITLE}</h3>
-					<p>{local.ATTACHMENTS_EMPTY_DESC}</p>
+					<h3>{LL.ATTACHMENTS.EMPTY_TITLE()}</h3>
+					<p>{LL.ATTACHMENTS.EMPTY_DESC()}</p>
 				</div>
 			) : (
 				<>
@@ -432,7 +427,6 @@ export default function AttachmentView({
 						onPreview={setSelectedFile}
 					/>
 					<Pagination
-						local={local}
 						page={page}
 						totalPages={Math.ceil(
 							filteredAttachments.length / pageSize
@@ -447,7 +441,6 @@ export default function AttachmentView({
 			{selectedFile && (
 				<PreviewModal
 					app={app}
-					local={local}
 					selectedFile={selectedFile}
 					selectedFileType={selectedFile.extension}
 					onClose={() => setSelectedFile(undefined)}
