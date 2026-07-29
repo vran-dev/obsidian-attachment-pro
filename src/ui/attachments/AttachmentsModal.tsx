@@ -54,7 +54,7 @@ export class AttachmentsModal extends Modal {
 		);
 	}
 
-	async onClose() {
+	onClose() {
 		this.root?.unmount();
 		this.root = null;
 	}
