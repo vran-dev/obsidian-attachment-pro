@@ -6,19 +6,19 @@
  *
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import Modal from "./Modal";
 
 export default function useModal(
 	afterClose?: () => void,
 	modalContentSize?: "auto" | "max"
 ): [
-	JSX.Element | null,
-	(title: string, showModal: (onClose: () => void) => JSX.Element) => void
+	ReactNode | null,
+	(title: string, showModal: (onClose: () => void) => ReactNode) => void
 ] {
 	const [modalContent, setModalContent] = useState<null | {
 		closeOnClickOutside: boolean;
-		content: JSX.Element;
+		content: ReactNode;
 		title: string;
 	}>(null);
 
@@ -49,8 +49,7 @@ export default function useModal(
 	const showModal = useCallback(
 		(
 			title: string,
-			// eslint-disable-next-line no-shadow
-			getContent: (onClose: () => void) => JSX.Element,
+			getContent: (onClose: () => void) => ReactNode,
 			closeOnClickOutside = false
 		) => {
 			setModalContent({

@@ -1,5 +1,5 @@
 import { App, MarkdownView, TFile } from "obsidian";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useObsidianApp } from "src/context/obsidianAppContext";
 import { AttachmentHandler } from "src/handler/attachmentsHandler";
 import { File } from "lucide-react";
@@ -239,7 +239,7 @@ function Content(props: {
 							rel="noopener"
 							onClick={(e) => {
 								e.preventDefault();
-								app.workspace.openLinkText(attachment.name, attachment.path, true, { active: true });
+								void app.workspace.openLinkText(attachment.name, attachment.path, true, { active: true });
 							}}
 						>
 							{attachment.name}
@@ -299,7 +299,7 @@ export default function AttachmentView({
 }: {
 	canInsert?: boolean,
 	onClose: () => void;
-}): JSX.Element {
+}): ReactNode {
 	const app = useObsidianApp();
 	const local = getLocal();
 	const [attachments, setAttachments] = useState<TFile[]>();
@@ -361,7 +361,7 @@ export default function AttachmentView({
 	);
 
 	useEffect(() => {
-		listAttachments(filter.unused);
+		void listAttachments(filter.unused);
 	}, [filter.unused, listAttachments]);
 
 	// 任何筛选条件变化都回到第一页，避免停留在已不存在的页码上

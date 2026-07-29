@@ -46,7 +46,7 @@ export function SettingForm(props: {
 	title: string;
 	config: AttachmentProConfig;
 	onChange: (config: AttachmentProConfig) => void;
-}): JSX.Element {
+}): ReactNode {
 	const app = useObsidianApp();
 	const { onChange } = props;
 	const [config, setConfig] = useState(props.config);
@@ -154,7 +154,7 @@ export function SettingForm(props: {
 			{showTooltip && (
 				<>
 					<div
-						ref={refs.setFloating}
+						ref={(node) => refs.setFloating(node)}
 						className="tooltip"
 						style={{
 							...floatingStyles,
@@ -457,7 +457,7 @@ export function SettingForm(props: {
 function ScopeInputTag(props: {
 	scope: AttachmentScope;
 	onChange: (ranges: ScopeRangeItem[]) => void;
-}): JSX.Element {
+}): ReactNode {
 	const { scope } = props;
 	const local = getLocal();
 	const app = useObsidianApp();

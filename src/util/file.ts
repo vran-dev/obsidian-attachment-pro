@@ -1,15 +1,9 @@
 import { App, TFile, normalizePath } from "obsidian";
 import { log } from "./log";
 
-export function getParentFolderFromTFile(file: TFile) {
-	const pageParent = file.parent;
-	let pageParentFolder;
-	if (pageParent == null) {
-		pageParentFolder = "";
-	} else {
-		pageParentFolder = pageParent.path;
-	}
-	return pageParentFolder;
+export function getParentFolderFromTFile(file: TFile): string {
+    const pageParent = file.parent;
+    return pageParent == null ? "" : pageParent.path;
 }
 
 export async function createFolderIfNotExist(path: string, app: App) {

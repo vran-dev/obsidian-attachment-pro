@@ -11,21 +11,6 @@ import '../style/suggest.css'
 import { AttachmentsModal } from "./ui/attachments/AttachmentsModal";
 import { getLocal } from "./i18/messages";
 
-declare module "obsidian" {
-	interface CanvasView extends TextFileView {
-		handlePaste: (e: ClipboardEvent) => Promise<void>;
-		/** Obsidian 未公开的 Canvas 内部对象，仅声明本插件用到的成员 */
-		canvas: {
-			posCenter(): { x: number; y: number };
-			createFileNode(options: {
-				pos: { x: number; y: number };
-				position: string;
-				file: TFile;
-			}): unknown;
-		};
-	}
-}
-
 export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
 
@@ -52,18 +37,17 @@ export default class AttachmentProPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		const merged = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
-		this.settings = migrateConfig(merged);
-		if (JSON.stringify(this.settings) !== JSON.stringify(merged)) {
-			// 迁移产生了变化，落盘避免坏值残留在 data.json
-			await this.saveData(this.settings);
-		}
-		log("[Config] loading plugins", this.settings);
-	}
+    const loaded = (await this.loadData()) as Partial<AttachmentProConfig> | null;
+    const merged: AttachmentProConfig = {
+        ...DEFAULT_SETTINGS,
+        ...(loaded ?? {}),
+    };
+    this.settings = migrateConfig(merged);
+    if (JSON.stringify(this.settings) !== JSON.stringify(merged)) {
+        await this.saveData(this.settings);
+    }
+    log("[Config] loading plugins", this.settings);
+}
 
 	async saveSettings() {
 		await this.saveData(this.settings);

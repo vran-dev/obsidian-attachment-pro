@@ -14,7 +14,7 @@ export function InputTags(props: {
 	getItems?: (query: string) => SuggestItem[];
 	inputPlaceholder?: string;
 	excludeTriggerKeys?: string[];
-}): JSX.Element {
+}): ReactNode {
 	const [value, setValue] = useState("");
 	const [hasSelected, setHasSelected] = useState(false);
 	const [showSuggest, setShowSuggest] = useState(false);
@@ -47,7 +47,8 @@ export function InputTags(props: {
 			const value = inputRef.current?.value;
 			if (value) {
 				appendTag(value);
-				inputRef.current!.value = "";
+				const el = inputRef.current;
+				if (el) { el.value = ""; }
 			}
 		}
 	};
