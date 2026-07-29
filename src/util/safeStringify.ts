@@ -1,11 +1,19 @@
-export function safeStringify(value: unknown): string {
+import { DateTime } from "luxon";
+
+export function safeStringify(value: unknown): string | undefined {
     if (typeof value === "string") return value;
-    if (typeof value === "number" || typeof value === "boolean") return String(value);
-    if (value === null) return "null";
-    // 对象/数组等：用 JSON 序列化，避免 [object Object]
-    try {
-        return JSON.stringify(value);
-    } catch {
+    if (typeof value === "number" || typeof value === "boolean") {
         return String(value);
     }
+    if (DateTime.isDateTime(value)) return value.toString();
+    if (Array.isArray(value)) {
+        const parts: string[] = [];
+        for (const item of value as unknown[]) {
+            const part = safeStringify(item);
+            if (part === undefined) return undefined;
+            parts.push(part);
+        }
+        return parts.join(",");
+    }
+    return undefined;
 }

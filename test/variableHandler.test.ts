@@ -74,6 +74,20 @@ describe("DefaultVariableHandler.handle", () => {
 		).toBe("${frontmatter.created}");
 	});
 
+	it("结果为普通对象时保留占位符，而非 [object Object]", () => {
+		const app = mockApp({ frontmatter: { created: "2026-01-15" } });
+		expect(
+			DefaultVariableHandler.handle("${frontmatter}", app, pageFile)
+		).toBe("${frontmatter}");
+	});
+
+	it("结果为原始类型数组时用逗号连接", () => {
+		const app = mockApp({ frontmatter: { tags: ["a", "b"] } });
+		expect(
+			DefaultVariableHandler.handle("${frontmatter.tags}", app, pageFile)
+		).toBe("a,b");
+	});
+
 	it("index > 0 时追加两位序号后缀", () => {
 		expect(
 			DefaultVariableHandler.handle(

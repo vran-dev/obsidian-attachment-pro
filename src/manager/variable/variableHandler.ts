@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { App, TFile } from "obsidian";
 import { safeEvaluate } from "./expressionEvaluator";
+import { safeStringify } from "@src/util/safeStringify";
 
 export class VariableContext {
 	[key: string]: unknown;
@@ -43,10 +44,9 @@ export default class DefaultVariableHandler {
 			placeholderRegex,
 			(match, placeholder: string) => {
 				const value = safeEvaluate(placeholder.trim(), context);
-				// 求值失败时原样保留 ${...} 占位符，避免静默丢失用户配置
-				return value !== undefined && value !== null
-					? String(value)
-					: match;
+				// 求值失败或结果无法转成有意义文本时，原样保留 ${...}
+				// 占位符，避免静默丢失用户配置
+				return safeStringify(value) ?? match;
 			}
 		);
 
