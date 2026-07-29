@@ -9,7 +9,7 @@ import EditorPasteOrDropHandler from "./event/editorPasteOrDropHandler";
 import '../style/styles.css'
 import '../style/suggest.css'
 import { AttachmentsModal } from "./ui/attachments/AttachmentsModal";
-import { getLocal } from "./i18/messages";
+import { LL } from "@src/i18n/i18n";
 
 export default class AttachmentProPlugin extends Plugin {
 	settings: AttachmentProConfig;
@@ -116,12 +116,12 @@ export default class AttachmentProPlugin extends Plugin {
 	registerCommands() {
 		this.addCommand({
 			id: "show-attachments",
-			name: getLocal().SHOW_ATTACHMENTS, 
+			name: LL.COMMAND.SHOW_ATTACHMENTS(),
 			callback: () => {
 				new AttachmentsModal(this.app, this, false).open();
 			},
 		});
-		this.addRibbonIcon('layers-3', getLocal().SHOW_ATTACHMENTS, () => {
+		this.addRibbonIcon('layers-3', LL.COMMAND.SHOW_ATTACHMENTS(), () => {
 			new AttachmentsModal(this.app, this, false).open();
 		});
 	}
@@ -131,7 +131,7 @@ export default class AttachmentProPlugin extends Plugin {
 			this.app.workspace.on("editor-menu", (menu, editor) => {
 				menu.addItem((item) => {
 					item
-						.setTitle(getLocal().CONTEXT_MENU_INSERT_ATTACHMENTS)
+						.setTitle(LL.COMMAND.CONTEXT_MENU_INSERT_ATTACHMENTS())
 						.setIcon("layers-3")
 						.onClick(() => {
 							new AttachmentsModal(this.app, this, true).open();

@@ -16,10 +16,10 @@ import {
 } from "../reactSettingTab";
 import { Select } from "../select/Select";
 import { ReactNode, useState } from "react";
-import { getLocal } from "src/i18/messages";
+import { LL } from "@src/i18n/i18n";
 import { InputTags } from "../tags/InputTags";
 import { DateTime } from "luxon";
-import { DEFAULT_DATETIME_FORMAT, SAMPLE_DATE } from "src/manager/constants";
+import { DEFAULT_DATETIME_FORMAT, LUXON_FORMAT_DOC_URL, SAMPLE_DATE } from "src/manager/constants";
 import { swapSave } from "src/util/sort";
 import { ChevronDown, ChevronUp, Folder, Tags, File } from "lucide-react";
 import {
@@ -50,8 +50,6 @@ export function SettingForm(props: {
 	const app = useObsidianApp();
 	const { onChange } = props;
 	const [config, setConfig] = useState(props.config);
-
-	const local = getLocal();
 
 	const onRuleChange = (rule: AttachmentRule) => {
 		const newConfig = {
@@ -183,7 +181,7 @@ export function SettingForm(props: {
 										getClientRects: () =>
 											el.getClientRects(),
 									});
-									setTooltip(local.MOVE_UP_TOOLTIP);
+									setTooltip(LL.SETTING.MOVE_UP_TOOLTIP());
 									setShowTooltip(true);
 								}}
 								onMouseLeave={() => setShowTooltip(false)}
@@ -202,7 +200,7 @@ export function SettingForm(props: {
 										getClientRects: () =>
 											el.getClientRects(),
 									});
-									setTooltip(local.MOVE_DOWN_TOOLTIP);
+									setTooltip(LL.SETTING.MOVE_DOWN_TOOLTIP());
 									setShowTooltip(true);
 								}}
 								onMouseLeave={() => setShowTooltip(false)}
@@ -213,9 +211,9 @@ export function SettingForm(props: {
 						</div>
 						<div className="form-item">
 							<div className="form-label">
-								{local.FILE_POSITION_LABEL}
+								{LL.FILE_POSITION.LABEL()}
 								<div className="form-description">
-									{local.FILE_POSITION_DESC}
+									{LL.FILE_POSITION.DESC()}
 								</div>
 							</div>
 							<div className="form-vertical-content">
@@ -235,7 +233,7 @@ export function SettingForm(props: {
 									<>
 										<SuggestInput
 											inputPlaceholder={
-												local.FILE_POSITION_PATH_INPUT_PLACEHOLDER
+												LL.FILE_POSITION.PATH_INPUT_PLACEHOLDER()
 											}
 											onInputChange={(value: string) => {
 												onRepositoryPathChange(
@@ -268,9 +266,9 @@ export function SettingForm(props: {
 							return (
 								<div className="form-item" key={index}>
 									<div className="form-label">
-										{local.SCOPE_LABEL}
+										{LL.SCOPE.LABEL()}
 										<div className="form-description">
-											{local.SCOPE_DESC}
+											{LL.SCOPE.DESC()}
 										</div>
 									</div>
 									<div className="form-vertical-content">
@@ -344,16 +342,23 @@ export function SettingForm(props: {
 
 						<div className="form-item">
 							<div className="form-label">
-								{local.FILE_NAME_FORMAT_LABEL}
-								<div
-									className="form-description"
-									dangerouslySetInnerHTML={{
-										__html:
-											rule.nameFormat.type == "DATETIME"
-												? local.FILE_NAME_FORMAT_DATTIME_DESC
-												: local.FILE_NAME_FORMAT_DESC,
-									}}
-								></div>
+								{LL.FILE_NAME_FORMAT.LABEL()}
+								<div className="form-description">
+									{rule.nameFormat.type == "DATETIME" ? (
+										<>
+											{LL.FILE_NAME_FORMAT.DATETIME_DESC()}{" "}
+											<a
+												href={LUXON_FORMAT_DOC_URL}
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												{LL.FILE_NAME_FORMAT.DATETIME_DESC_DOC()}
+											</a>
+										</>
+									) : (
+										LL.FILE_NAME_FORMAT.DESC()
+									)}
+								</div>
 							</div>
 							<div className="form-vertical-content">
 								<Select
@@ -378,8 +383,8 @@ export function SettingForm(props: {
 										<SuggestInput
 											inputPlaceholder={
 												rule.nameFormat.type === "DATETIME" ?
-												local.FILE_NAME_FORMAT_DATETIME_INPUT_PLACEHOLDER:
-												local.FILE_NAME_FORMAT_CUSTOM_INPUT_PLACEHOLDER
+												LL.FILE_NAME_FORMAT.DATETIME_INPUT_PLACEHOLDER():
+												LL.FILE_NAME_FORMAT.CUSTOM_INPUT_PLACEHOLDER()
 											}
 											defaultInputValue={
 												rule.nameFormat.format
@@ -413,7 +418,7 @@ export function SettingForm(props: {
 
 								{rule.nameFormat.type === "DATETIME" ? (
 									<div className="form-description">
-										{local.EXAMPLE}
+										{LL.FILE_NAME_FORMAT.EXAMPLE()}
 										{": "}
 										{rule.nameFormat.format
 											? DateTime.fromJSDate(
@@ -428,9 +433,13 @@ export function SettingForm(props: {
 
 								{rule.nameFormat.type === "CUSTOMIZE" ? (
 									<div className="form-description">
-										{local.EXAMPLE}
+										{LL.FILE_NAME_FORMAT.EXAMPLE()}
 										{": "}
-										{local.FILE_NAME_FORMAT_CUSTOM_DESC}
+										{LL.FILE_NAME_FORMAT.CUSTOM_DESC({
+											attachmentName: "${attachmentName}",
+											notename: "${notename}",
+											uuid: "${uuid}",
+										})}
 									</div>
 								) : null}
 							</div>
@@ -438,7 +447,7 @@ export function SettingForm(props: {
 
 						<div>
 							<button onClick={() => onRuleRemove(rule)}>
-								{local.RULE_DELETE_BUTTON_TEXT}
+								{LL.SETTING.RULE_DELETE_BUTTON_TEXT()}
 							</button>
 						</div>
 					</div>
@@ -447,7 +456,7 @@ export function SettingForm(props: {
 
 			<div>
 				<button onClick={() => onRuleAdd()}>
-					{local.RULE_ADD_BUTTON_TEXT}
+					{LL.SETTING.RULE_ADD_BUTTON_TEXT()}
 				</button>
 			</div>
 		</div>
@@ -459,7 +468,6 @@ function ScopeInputTag(props: {
 	onChange: (ranges: ScopeRangeItem[]) => void;
 }): ReactNode {
 	const { scope } = props;
-	const local = getLocal();
 	const app = useObsidianApp();
 
 	if (!isRangedScope(scope)) {
@@ -475,16 +483,16 @@ function ScopeInputTag(props: {
 	switch (scope.type) {
 		case "ATTACHMENT_FILE_EXTENSION":
 			icon = <File />;
-			placeholder = local.SCOPE_EXTENSION_VALUE_INPUT_PLACEHOLDER;
+			placeholder = LL.SCOPE.EXTENSION_VALUE_INPUT_PLACEHOLDER();
 			break;
 		case "SPECIFIC_FILE_FOLDER":
 			icon = <Folder />;
-			placeholder = local.SCOPE_SPECIFIC_FOLDER_INPUT_PLACEHOLDER;
+			placeholder = LL.SCOPE.SPECIFIC_FOLDER_INPUT_PLACEHOLDER();
 			getItems = (query) => getFolderOptions(query, app);
 			break;
 		case "FILE_TAG":
 			icon = <Tags />;
-			placeholder = local.SCOPE_TAG_VALUE_INPUT_PLACEHOLDER;
+			placeholder = LL.SCOPE.TAG_VALUE_INPUT_PLACEHOLDER();
 			getItems = (query) => getTagOptions(query, app);
 			break;
 	}

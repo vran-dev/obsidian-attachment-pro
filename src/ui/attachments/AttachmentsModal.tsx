@@ -2,7 +2,7 @@ import { App, Modal, Plugin } from "obsidian";
 import { StrictMode, Suspense, lazy } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ObsidianAppContext } from "src/context/obsidianAppContext";
-import { getLocal } from "src/i18/messages";
+import { LL } from "@src/i18n/i18n";
 
 export class AttachmentsModal extends Modal {
 	root: Root | null = null;
@@ -40,7 +40,7 @@ export class AttachmentsModal extends Modal {
 					<Suspense
 						fallback={
 							<div className="attachmentsPro--LoadingState">
-								{getLocal().ATTACHMENTS_LOADING}
+								{LL.ATTACHMENTS.LOADING()}
 							</div>
 						}
 					>
