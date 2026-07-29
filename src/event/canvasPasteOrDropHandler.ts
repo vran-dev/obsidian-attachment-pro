@@ -21,9 +21,10 @@ export default class CanvasPasteOrDropHandler {
 
 	install(plugin: AttachmentProPlugin) {
 		// 原始 handlePaste 必须以 canvasView 为 this 调用
-		const invokeOriginal = (evt: ClipboardEvent) =>
-			this.originalHandlePasteFn.call(this.canvasView, evt);
-
+		const invokeOriginal = (evt: ClipboardEvent): void => {
+			this.originalHandlePasteFn.call(this.canvasView, evt);	
+		}
+			
 		this.canvasView.handlePaste = async (evt: ClipboardEvent) => {
 			const dataItems = this.getDataTransferItem(evt);
 			if (!dataItems) {

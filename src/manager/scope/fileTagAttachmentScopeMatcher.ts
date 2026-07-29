@@ -33,9 +33,9 @@ export default class FileTagAttachmentScopeMatcher
 
 		// merge tags from frontmatter
 		if (fileCache.frontmatter) {
-			const tags = fileCache.frontmatter["tags"];
+			const tags: unknown = fileCache.frontmatter["tags"];
 			if (Array.isArray(tags)) {
-				allTags.push(...tags.map(String));
+				allTags.push(...(tags as unknown[]).map(String));
 			} else if (typeof tags === "string") {
 				allTags.push(...tags.split(",").map((t) => t.trim()));
 			}

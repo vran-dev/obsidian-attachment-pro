@@ -8,8 +8,7 @@
 
 import "./Modal.css";
 
-import * as React from "react";
-import { ReactNode, useEffect, useRef } from "react";
+import { CSSProperties, ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { getLocal } from "src/i18/messages";
 
@@ -75,7 +74,7 @@ function PortalImpl({
 		};
 	}, [closeOnClickOutside, onClose]);
 
-	let modalContentStyle;
+	let modalContentStyle: CSSProperties;
 	if (modalContentSize === "max") {
 		modalContentStyle = {
 			flexGrow: 1,

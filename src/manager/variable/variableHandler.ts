@@ -3,7 +3,7 @@ import { App, TFile } from "obsidian";
 import { safeEvaluate } from "./expressionEvaluator";
 
 export class VariableContext {
-	[key: string]: any;
+	[key: string]: unknown;
 
 	static fromFile(app: App, file: TFile, attachment?: File): VariableContext {
 		const context = new VariableContext();
@@ -41,7 +41,7 @@ export default class DefaultVariableHandler {
 		const placeholderRegex = /\${(.*?)}/g;
 		const replacedText = input.replace(
 			placeholderRegex,
-			(match, placeholder) => {
+			(match, placeholder: string) => {
 				const value = safeEvaluate(placeholder.trim(), context);
 				// 求值失败时原样保留 ${...} 占位符，避免静默丢失用户配置
 				return value !== undefined && value !== null

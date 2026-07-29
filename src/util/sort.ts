@@ -1,4 +1,4 @@
-export function swapSave(arr: any[], current: number, next: number) {
+export function swapSave<T>(arr: T[], current: number, next: number): void {
     if (current < 0 || current >= arr.length || next < 0 || next >= arr.length) {
         return;
     }
